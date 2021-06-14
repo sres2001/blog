@@ -23,6 +23,9 @@ public class Post {
     private String text;
     private int viewCount;
 
+    // TODO: 14.06.2021 get tags
+    // TODO: 14.06.2021 get comments
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public int getId() {

@@ -10,16 +10,12 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "tag2post")
 public class PostTag {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-
-    @Column(name = "post_id", nullable = false)
     private int postId;
-
-    @Column(name = "tag_id", nullable = false)
     private int tagId;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     public int getId() {
         return id;
     }
@@ -28,6 +24,7 @@ public class PostTag {
         this.id = id;
     }
 
+    @Column(name = "post_id", nullable = false)
     public int getPostId() {
         return postId;
     }
@@ -36,6 +33,7 @@ public class PostTag {
         this.postId = postId;
     }
 
+    @Column(name = "tag_id", nullable = false)
     public int getTagId() {
         return tagId;
     }

@@ -11,22 +11,14 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "post_votes")
 public class PostVote {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-
-    @Column(name = "user_id", nullable = false)
     private int userId;
-
-    @Column(name = "post_id", nullable = false)
     private int postId;
-
-    @Column(name = "time", nullable = false)
     private Date time;
-
-    @Column(name = "value", nullable = false)
     private byte value;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     public int getId() {
         return id;
     }
@@ -35,6 +27,7 @@ public class PostVote {
         this.id = id;
     }
 
+    @Column(name = "user_id", nullable = false)
     public int getUserId() {
         return userId;
     }
@@ -43,6 +36,7 @@ public class PostVote {
         this.userId = userId;
     }
 
+    @Column(name = "post_id", nullable = false)
     public int getPostId() {
         return postId;
     }
@@ -51,6 +45,7 @@ public class PostVote {
         this.postId = postId;
     }
 
+    @Column(name = "time", nullable = false)
     public Date getTime() {
         return time;
     }
@@ -59,6 +54,7 @@ public class PostVote {
         this.time = time;
     }
 
+    @Column(name = "value", nullable = false)
     public byte getValue() {
         return value;
     }

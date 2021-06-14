@@ -11,25 +11,15 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "post_comments")
 public class PostComment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-
-    @Column(name = "parent_id")
     private Integer parentId;
-
-    @Column(name = "post_id", nullable = false)
     private int postId;
-
-    @Column(name = "user_id", nullable = false)
     private int userId;
-
-    @Column(name = "time", nullable = false)
     private Date time;
-
-    @Column(name = "text", nullable = false, columnDefinition = "TEXT")
     private String text;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     public int getId() {
         return id;
     }
@@ -38,6 +28,7 @@ public class PostComment {
         this.id = id;
     }
 
+    @Column(name = "parent_id")
     public Integer getParentId() {
         return parentId;
     }
@@ -46,6 +37,7 @@ public class PostComment {
         this.parentId = parentId;
     }
 
+    @Column(name = "post_id", nullable = false)
     public int getPostId() {
         return postId;
     }
@@ -54,6 +46,7 @@ public class PostComment {
         this.postId = postId;
     }
 
+    @Column(name = "user_id", nullable = false)
     public int getUserId() {
         return userId;
     }
@@ -62,6 +55,7 @@ public class PostComment {
         this.userId = userId;
     }
 
+    @Column(name = "time", nullable = false)
     public Date getTime() {
         return time;
     }
@@ -70,6 +64,7 @@ public class PostComment {
         this.time = time;
     }
 
+    @Column(name = "text", nullable = false, columnDefinition = "TEXT")
     public String getText() {
         return text;
     }
