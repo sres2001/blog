@@ -1,19 +1,14 @@
 package ru.skillbox.blog.model;
 
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "post_votes")
 public class PostVote {
     private int id;
-    private int userId;
-    private int postId;
+    private User user;
+    private Post post;
     private Date time;
     private byte value;
 
@@ -27,23 +22,26 @@ public class PostVote {
         this.id = id;
     }
 
-    @Column(name = "user_id", nullable = false)
-    public int getUserId() {
-        return userId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    @Column(name = "post_id", nullable = false)
-    public int getPostId() {
-        return postId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "post_id", nullable = false, updatable = false)
+    public Post getPost() {
+        return post;
     }
 
-    public void setPostId(int postId) {
-        this.postId = postId;
+    public void setPost(Post post) {
+        this.post = post;
     }
+
 
     @Column(name = "time", nullable = false)
     public Date getTime() {

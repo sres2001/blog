@@ -1,14 +1,8 @@
 package ru.skillbox.blog.model;
 
+import javax.persistence.*;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.util.Set;
 
 @Entity
 @Table(name = "posts")
@@ -16,15 +10,13 @@ public class Post {
     private int id;
     private byte isActive;
     private ModerationStatus moderationStatus;
-    private Integer moderatorId;
-    private int userId;
+    private User moderator;
+    private User user;
     private Date time;
     private String title;
     private String text;
     private int viewCount;
-
-    // TODO: 14.06.2021 get tags
-    // TODO: 14.06.2021 get comments
+    private Set<PostTag> tags;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -56,22 +48,24 @@ public class Post {
         this.moderationStatus = moderationStatus;
     }
 
-    @Column(name = "moderator_id")
-    public Integer getModeratorId() {
-        return moderatorId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "moderator_id")
+    public User getModerator() {
+        return moderator;
     }
 
-    public void setModeratorId(Integer moderatorId) {
-        this.moderatorId = moderatorId;
+    public void setModerator(User moderator) {
+        this.moderator = moderator;
     }
 
-    @Column(name = "user_id", nullable = false)
-    public int getUserId() {
-        return userId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Column(name = "time", nullable = false)
@@ -108,5 +102,15 @@ public class Post {
 
     public void setViewCount(int viewCount) {
         this.viewCount = viewCount;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "post_id")
+    public Set<PostTag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<PostTag> tags) {
+        this.tags = tags;
     }
 }

@@ -1,20 +1,15 @@
 package ru.skillbox.blog.model;
 
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "post_comments")
 public class PostComment {
     private int id;
-    private Integer parentId;
-    private int postId;
-    private int userId;
+    private PostComment parent;
+    private Post post;
+    private User user;
     private Date time;
     private String text;
 
@@ -28,31 +23,34 @@ public class PostComment {
         this.id = id;
     }
 
-    @Column(name = "parent_id")
-    public Integer getParentId() {
-        return parentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", updatable = false)
+    public PostComment getParent() {
+        return parent;
     }
 
-    public void setParentId(Integer parentId) {
-        this.parentId = parentId;
+    public void setParent(PostComment parent) {
+        this.parent = parent;
     }
 
-    @Column(name = "post_id", nullable = false)
-    public int getPostId() {
-        return postId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "post_id", nullable = false, updatable = false)
+    public Post getPost() {
+        return post;
     }
 
-    public void setPostId(int postId) {
-        this.postId = postId;
+    public void setPost(Post post) {
+        this.post = post;
     }
 
-    @Column(name = "user_id", nullable = false)
-    public int getUserId() {
-        return userId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Column(name = "time", nullable = false)
