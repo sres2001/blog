@@ -3,4 +3,13 @@ spring.datasource:
   dialect: org.hibernate.dialect.MySQL8Dialect
   username: root
   password: testtest
-spring.jpa.hibernate.ddl-auto: create
+
+#spring.jpa.hibernate.ddl-auto: create
+
+blog:
+  title: DevPub
+  subtitle: Рассказы разработчиков
+  phone: +7 987 654-32-10
+  email: blog@nomail.ru
+  copyright: Сергей Решетник
+  copyrightFrom: 2021
