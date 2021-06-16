@@ -5,12 +5,18 @@ import javax.persistence.*;
 @Entity
 @Table(name = "tag2post")
 public class PostTag {
-    private int id;
-    private Post post;
-    private Tag tag;
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "post_id", nullable = false, updatable = false)
+    private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "tag_id", nullable = false, updatable = false)
+    private Tag tag;
+
     public int getId() {
         return id;
     }
@@ -19,8 +25,6 @@ public class PostTag {
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "post_id", nullable = false, updatable = false)
     public Post getPost() {
         return post;
     }
@@ -29,8 +33,6 @@ public class PostTag {
         this.post = post;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "tag_id", nullable = false, updatable = false)
     public Tag getTag() {
         return tag;
     }

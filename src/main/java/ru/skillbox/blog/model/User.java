@@ -11,17 +11,31 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "users")
 public class User {
-    private int id;
-    private byte isModerator;
-    private Date registrationTime;
-    private String name;
-    private String email;
-    private String password;
-    private String code;
-    private String photo;
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
+    @Column(name = "is_moderator", nullable = false)
+    private byte isModerator;
+
+    @Column(name = "reg_time", nullable = false)
+    private Date registrationTime;
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @Column(name = "code")
+    private String code;
+
+    @Column(name = "photo", columnDefinition = "TEXT")
+    private String photo;
+
     public int getId() {
         return id;
     }
@@ -30,7 +44,6 @@ public class User {
         this.id = id;
     }
 
-    @Column(name = "is_moderator", nullable = false)
     public byte getIsModerator() {
         return isModerator;
     }
@@ -39,7 +52,6 @@ public class User {
         this.isModerator = isModerator;
     }
 
-    @Column(name = "reg_time", nullable = false)
     public Date getRegistrationTime() {
         return registrationTime;
     }
@@ -48,7 +60,6 @@ public class User {
         this.registrationTime = registrationTime;
     }
 
-    @Column(name = "name", nullable = false)
     public String getName() {
         return name;
     }
@@ -57,7 +68,6 @@ public class User {
         this.name = name;
     }
 
-    @Column(name = "email", nullable = false)
     public String getEmail() {
         return email;
     }
@@ -66,7 +76,6 @@ public class User {
         this.email = email;
     }
 
-    @Column(name = "password", nullable = false)
     public String getPassword() {
         return password;
     }
@@ -75,7 +84,6 @@ public class User {
         this.password = password;
     }
 
-    @Column(name = "code")
     public String getCode() {
         return code;
     }
@@ -84,7 +92,6 @@ public class User {
         this.code = code;
     }
 
-    @Column(name = "photo", columnDefinition = "TEXT")
     public String getPhoto() {
         return photo;
     }

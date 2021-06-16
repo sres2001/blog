@@ -7,19 +7,42 @@ import java.util.Set;
 @Entity
 @Table(name = "posts")
 public class Post {
-    private int id;
-    private byte isActive;
-    private ModerationStatus moderationStatus;
-    private User moderator;
-    private User user;
-    private Date time;
-    private String title;
-    private String text;
-    private int viewCount;
-    private Set<PostTag> tags;
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
+    @Column(name = "is_active", nullable = false)
+    private byte isActive;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "moderation_status", nullable = false,
+            columnDefinition = "enum('NEW', 'ACCEPTED', 'DECLINED')")
+    private ModerationStatus moderationStatus;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "moderator_id")
+    private User moderator;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    private User user;
+
+    @Column(name = "time", nullable = false)
+    private Date time;
+
+    @Column(name = "title", nullable = false)
+    private String title;
+
+    @Column(name = "text", nullable = false, columnDefinition = "TEXT")
+    private String text;
+
+    @Column(name = "view_count", nullable = false)
+    private int viewCount;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "post_id")
+    private Set<PostTag> tags;
+
     public int getId() {
         return id;
     }
@@ -28,7 +51,6 @@ public class Post {
         this.id = id;
     }
 
-    @Column(name = "is_active", nullable = false)
     public byte getIsActive() {
         return isActive;
     }
@@ -37,9 +59,6 @@ public class Post {
         this.isActive = isActive;
     }
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "moderation_status", nullable = false,
-            columnDefinition = "enum('NEW', 'ACCEPTED', 'DECLINED')")
     public ModerationStatus getModerationStatus() {
         return moderationStatus;
     }
@@ -48,8 +67,6 @@ public class Post {
         this.moderationStatus = moderationStatus;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "moderator_id")
     public User getModerator() {
         return moderator;
     }
@@ -58,8 +75,6 @@ public class Post {
         this.moderator = moderator;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false, updatable = false)
     public User getUser() {
         return user;
     }
@@ -68,7 +83,6 @@ public class Post {
         this.user = user;
     }
 
-    @Column(name = "time", nullable = false)
     public Date getTime() {
         return time;
     }
@@ -77,7 +91,6 @@ public class Post {
         this.time = time;
     }
 
-    @Column(name = "title", nullable = false)
     public String getTitle() {
         return title;
     }
@@ -86,7 +99,6 @@ public class Post {
         this.title = title;
     }
 
-    @Column(name = "text", nullable = false, columnDefinition = "TEXT")
     public String getText() {
         return text;
     }
@@ -95,7 +107,6 @@ public class Post {
         this.text = text;
     }
 
-    @Column(name = "view_count", nullable = false)
     public int getViewCount() {
         return viewCount;
     }
@@ -104,8 +115,6 @@ public class Post {
         this.viewCount = viewCount;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "post_id")
     public Set<PostTag> getTags() {
         return tags;
     }
