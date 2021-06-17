@@ -1,0 +1,649 @@
+databaseChangeLog:
+- changeSet:
+    id: 1623912557000-1
+    author: serger
+    changes:
+      - insert:
+          tableName: global_settings
+          columns:
+            - column:
+                name: id
+                value: 1
+            - column:
+                name: code
+                value: MULTIUSER_MODE
+            - column:
+                name: name
+                value: Многопользовательский режим
+            - column:
+                name: value
+                value: YES
+- changeSet:
+    id: 1623912557000-2
+    author: serger
+    changes:
+      - insert:
+          tableName: global_settings
+          columns:
+            - column:
+                name: id
+                value: 2
+            - column:
+                name: code
+                value: POST_PREMODERATION
+            - column:
+                name: name
+                value: Премодерация постов
+            - column:
+                name: value
+                value: NO
+- changeSet:
+    id: 1623912557000-3
+    author: serger
+    changes:
+      - insert:
+          tableName: global_settings
+          columns:
+            - column:
+                name: id
+                value: 3
+            - column:
+                name: code
+                value: STATISTICS_IS_PUBLIC
+            - column:
+                name: name
+                value: Показывать всем статистику блога
+            - column:
+                name: value
+                value: NO
+- changeSet:
+    id: 1623912557000-4
+    author: serger
+    changes:
+      - insert:
+          tableName: users
+          columns:
+            - column:
+                name: id
+                value: 4
+            - column:
+                name: reg_time
+                valueDate: 2020-01-23 15:34:48
+            - column:
+                name: is_moderator
+                value: 1
+            - column:
+                name: name
+                value: Виссарион Белинский
+            - column:
+                name: email
+                value: visbel1811@litra.ru
+            - column:
+                name: password
+                value: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
+- changeSet:
+    id: 1623912557000-5
+    author: serger
+    changes:
+      - insert:
+          tableName: users
+          columns:
+            - column:
+                name: id
+                value: 5
+            - column:
+                name: reg_time
+                valueDate: 2020-03-09 11:22:33
+            - column:
+                name: is_moderator
+                value: 0
+            - column:
+                name: name
+                value: Александр Пушкин
+            - column:
+                name: email
+                value: alex@litra.ru
+            - column:
+                name: password
+                value: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
+- changeSet:
+    id: 1623912557000-6
+    author: serger
+    changes:
+      - insert:
+          tableName: users
+          columns:
+            - column:
+                name: id
+                value: 6
+            - column:
+                name: reg_time
+                valueDate: 2021-05-01 10:20:30
+            - column:
+                name: is_moderator
+                value: 0
+            - column:
+                name: name
+                value: Лев Толстой
+            - column:
+                name: email
+                value: JIEB@litra.ru
+            - column:
+                name: password
+                value: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
+- changeSet:
+    id: 1623912557000-7
+    author: serger
+    changes:
+      - insert:
+          tableName: posts
+          columns:
+            - column:
+                name: id
+                value: 7
+            - column:
+                name: is_active
+                value: 1
+            - column:
+                name: moderation_status
+                value: ACCEPTED
+            - column:
+                name: user_id
+                value: 5
+            - column:
+                name: time
+                valueDate: 2020-09-01 01:30:00
+            - column:
+                name: title
+                value: Скоро будет стих
+            - column:
+                name: text
+                value: Coming soon
+            - column:
+                name: view_count
+                value: 1234
+- changeSet:
+    id: 1623912557000-8
+    author: serger
+    changes:
+      - insert:
+          tableName: posts
+          columns:
+            - column:
+                name: id
+                value: 8
+            - column:
+                name: is_active
+                value: 0
+            - column:
+                name: moderation_status
+                value: NEW
+            - column:
+                name: user_id
+                value: 5
+            - column:
+                name: time
+                valueDate: 2020-09-01 02:00:00
+            - column:
+                name: title
+                value: Анчар (черновик)
+            - column:
+                name: text
+                value: |-2
+                  В пустыне чахлой...
+            - column:
+                name: view_count
+                value: 0
+- changeSet:
+    id: 1623912557000-9
+    author: serger
+    changes:
+      - insert:
+          tableName: posts
+          columns:
+            - column:
+                name: id
+                value: 9
+            - column:
+                name: is_active
+                value: 1
+            - column:
+                name: moderation_status
+                value: ACCEPTED
+            - column:
+                name: moderator_id
+                value: 4
+            - column:
+                name: user_id
+                value: 5
+            - column:
+                name: time
+                valueDate: 2020-09-01 08:00:00
+            - column:
+                name: title
+                value: Анчар
+            - column:
+                name: text
+                value: |-2
+                  В пустыне чахлой и скупой,
+                  На почве, зноем раскаленной,
+                  Анчар, как грозный часовой,
+                  Стоит — один во всей вселенной.
+
+                  Природа жаждущих степей
+                  Его в день гнева породила,
+                  И зелень мертвую ветвей
+                  И корни ядом напоила.
+
+                  Яд каплет сквозь его кору,
+                  К полудню растопясь от зною,
+                  И застывает ввечеру
+                  Густой прозрачною смолою.
+
+                  К нему и птица не летит,
+                  И тигр нейдет: лишь вихорь черный
+                  На древо смерти набежит —
+                  И мчится прочь, уже тлетворный.
+
+                  И если туча оросит,
+                  Блуждая, лист его дремучий,
+                  С его ветвей, уж ядовит,
+                  Стекает дождь в песок горючий.
+
+                  Но человека человек
+                  Послал к анчару властным взглядом,
+                  И тот послушно в путь потек
+                  И к утру возвратился с ядом.
+
+                  Принес он смертную смолу
+                  Да ветвь с увядшими листами,
+                  И пот по бледному челу
+                  Струился хладными ручьями;
+
+                  Принес — и ослабел и лег
+                  Под сводом шалаша на лыки,
+                  И умер бедный раб у ног
+                  Непобедимого владыки.
+
+                  А царь тем ядом напитал
+                  Свои послушливые стрелы
+                  И с ними гибель разослал
+                  К соседям в чуждые пределы.
+            - column:
+                name: view_count
+                value: 155
+- changeSet:
+    id: 1623912557000-10
+    author: serger
+    changes:
+      - insert:
+          tableName: posts
+          columns:
+            - column:
+                name: id
+                value: 10
+            - column:
+                name: is_active
+                value: 1
+            - column:
+                name: moderation_status
+                value: ACCEPTED
+            - column:
+                name: moderator_id
+                value: 4
+            - column:
+                name: user_id
+                value: 6
+            - column:
+                name: time
+                valueDate: 2021-05-30 18:18:18
+            - column:
+                name: title
+                value: Слон
+            - column:
+                name: text
+                value: >-2
+                  У одного индейца был слон. Дальше пока не придумал.
+            - column:
+                name: view_count
+                value: 10
+- changeSet:
+    id: 1623912557000-11
+    author: serger
+    changes:
+      - insert:
+          tableName: posts
+          columns:
+            - column:
+                name: id
+                value: 11
+            - column:
+                name: is_active
+                value: 1
+            - column:
+                name: moderation_status
+                value: ACCEPTED
+            - column:
+                name: moderator_id
+                value: 4
+            - column:
+                name: user_id
+                value: 6
+            - column:
+                name: time
+                valueDate: 2021-05-30 19:19:19
+            - column:
+                name: title
+                value: Слон 2
+            - column:
+                name: text
+                value: >-2
+                  У одного индейца был слон. Хозяин дурно кормил его и заставлял много работать.
+                  Один раз слон рассердился и наступил ногою на своего хозяина. Индеец умер. Грустно...
+                  Нужно что-то добавить.
+            - column:
+                name: view_count
+                value: 10
+- changeSet:
+    id: 1623912557000-12
+    author: serger
+    changes:
+      - insert:
+          tableName: posts
+          columns:
+            - column:
+                name: id
+                value: 12
+            - column:
+                name: is_active
+                value: 1
+            - column:
+                name: moderation_status
+                value: ACCEPTED
+            - column:
+                name: moderator_id
+                value: 4
+            - column:
+                name: user_id
+                value: 6
+            - column:
+                name: time
+                valueDate: 2021-05-31 20:20:20
+            - column:
+                name: title
+                value: Слон (финальная версия)
+            - column:
+                name: text
+                value: >-2
+                  У одного индейца был слон. Хозяин дурно кормил его и заставлял много работать.
+                  Один раз слон рассердился и наступил ногою на своего хозяина. Индеец умер. Тогда жена индейца заплакала,
+                  принесла своих детей к слону и бросила их слону под ноги. Она сказала: «Слон! ты убил отца, убей и их».
+                  Слон посмотрел на детей, взял хоботом старшего, потихоньку поднял и посадил его себе на шею. И слон стал
+                  слушаться этого мальчика и работать для него.
+            - column:
+                name: view_count
+                value: 10
+- changeSet:
+    id: 1623912557000-13
+    author: serger
+    changes:
+      - insert:
+          tableName: posts
+          columns:
+            - column:
+                name: id
+                value: 13
+            - column:
+                name: is_active
+                value: 1
+            - column:
+                name: moderation_status
+                value: DECLINED
+            - column:
+                name: moderator_id
+                value: 4
+            - column:
+                name: user_id
+                value: 6
+            - column:
+                name: time
+                valueDate: 2021-06-01 11:11:11
+            - column:
+                name: title
+                value: Слон (финальная версия) Ещё раз, вдруг кто-нибудь не видел.
+            - column:
+                name: text
+                value: >-2
+                  У одного индейца был слон. Хозяин дурно кормил его и заставлял много работать.
+                  Один раз слон рассердился и наступил ногою на своего хозяина. Индеец умер. Тогда жена индейца заплакала,
+                  принесла своих детей к слону и бросила их слону под ноги. Она сказала: «Слон! ты убил отца, убей и их».
+                  Слон посмотрел на детей, взял хоботом старшего, потихоньку поднял и посадил его себе на шею. И слон стал
+                  слушаться этого мальчика и работать для него.
+            - column:
+                name: view_count
+                value: 0
+- changeSet:
+    id: 1623912557000-14
+    author: serger
+    changes:
+      - insert:
+          tableName: posts
+          columns:
+            - column:
+                name: id
+                value: 14
+            - column:
+                name: is_active
+                value: 1
+            - column:
+                name: moderation_status
+                value: ACCEPTED
+            - column:
+                name: moderator_id
+                value: 4
+            - column:
+                name: user_id
+                value: 6
+            - column:
+                name: time
+                valueDate: 2021-06-02 11:11:12
+            - column:
+                name: title
+                value: Не слон
+            - column:
+                name: text
+                value: >-2
+                  Что-нибудь не про слона. О! Будет про войну. И мир, чтобы два раза не вставать.
+            - column:
+                name: view_count
+                value: 123
+- changeSet:
+    id: 1623912557000-15
+    author: serger
+    changes:
+      - insert:
+          tableName: posts
+          columns:
+            - column:
+                name: id
+                value: 15
+            - column:
+                name: is_active
+                value: 1
+            - column:
+                name: moderation_status
+                value: ACCEPTED
+            - column:
+                name: moderator_id
+                value: 4
+            - column:
+                name: user_id
+                value: 6
+            - column:
+                name: time
+                valueDate: 2022-09-09 00:00:00
+            - column:
+                name: title
+                value: День рождения!
+            - column:
+                name: text
+                value: У меня днюха! ...Я это сообщение записал заранее, не уверен, что сработает вовремя.
+            - column:
+                name: view_count
+                value: 0
+- changeSet:
+    id: 1623912557000-16
+    author: serger
+    changes:
+      - insert:
+          tableName: tags
+          columns:
+            - column:
+               name: id
+               value: 16
+            - column:
+               name: name
+               value: Java
+- changeSet:
+    id: 1623912557000-17
+    author: serger
+    changes:
+      - insert:
+          tableName: tags
+          columns:
+            - column:
+               name: id
+               value: 17
+            - column:
+               name: name
+               value: Hadoop
+- changeSet:
+    id: 1623912557000-18
+    author: serger
+    changes:
+      - insert:
+          tableName: tag2post
+          columns:
+            - column:
+               name: id
+               value: 18
+            - column:
+               name: post_id
+               value: 8
+            - column:
+               name: tag_id
+               value: 16
+- changeSet:
+    id: 1623912557000-19
+    author: serger
+    changes:
+      - insert:
+          tableName: tag2post
+          columns:
+            - column:
+               name: id
+               value: 19
+            - column:
+               name: post_id
+               value: 9
+            - column:
+               name: tag_id
+               value: 16
+- changeSet:
+    id: 1623912557000-20
+    author: serger
+    changes:
+      - insert:
+          tableName: tag2post
+          columns:
+            - column:
+               name: id
+               value: 20
+            - column:
+               name: post_id
+               value: 10
+            - column:
+               name: tag_id
+               value: 17
+- changeSet:
+    id: 1623912557000-21
+    author: serger
+    changes:
+      - insert:
+          tableName: tag2post
+          columns:
+            - column:
+               name: id
+               value: 21
+            - column:
+               name: post_id
+               value: 11
+            - column:
+               name: tag_id
+               value: 17
+- changeSet:
+    id: 1623912557000-22
+    author: serger
+    changes:
+      - insert:
+          tableName: tag2post
+          columns:
+            - column:
+               name: id
+               value: 22
+            - column:
+               name: post_id
+               value: 12
+            - column:
+               name: tag_id
+               value: 17
+- changeSet:
+    id: 1623912557000-23
+    author: serger
+    changes:
+      - insert:
+          tableName: tag2post
+          columns:
+            - column:
+               name: id
+               value: 23
+            - column:
+               name: post_id
+               value: 13
+            - column:
+               name: tag_id
+               value: 17
+- changeSet:
+    id: 1623912557000-24
+    author: serger
+    changes:
+      - insert:
+          tableName: tag2post
+          columns:
+            - column:
+               name: id
+               value: 24
+            - column:
+               name: post_id
+               value: 14
+            - column:
+               name: tag_id
+               value: 16
+- changeSet:
+    id: 1623912557000-25
+    author: serger
+    changes:
+      - insert:
+          tableName: tag2post
+          columns:
+            - column:
+               name: id
+               value: 25
+            - column:
+               name: post_id
+               value: 14
+            - column:
+               name: tag_id
+               value: 17
+#post_votes
+#post_comments
