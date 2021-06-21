@@ -17,7 +17,7 @@ databaseChangeLog:
                 value: Многопользовательский режим
             - column:
                 name: value
-                value: YES
+                value: 'YES'
 - changeSet:
     id: 1623912557000-2
     author: serger
@@ -36,7 +36,7 @@ databaseChangeLog:
                 value: Премодерация постов
             - column:
                 name: value
-                value: NO
+                value: 'NO'
 - changeSet:
     id: 1623912557000-3
     author: serger
@@ -55,4 +55,4 @@ databaseChangeLog:
                 value: Показывать всем статистику блога
             - column:
                 name: value
-                value: NO
+                value: 'NO'

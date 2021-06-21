@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.skillbox.blog.api.response.PostListResponse;
-import ru.skillbox.blog.api.response.TagListResponse;
 import ru.skillbox.blog.service.PostService;
 
 import java.util.List;
@@ -39,10 +38,5 @@ public class ApiPostController {
                 break;
         }
         return new PostListResponse(0, List.of());
-    }
-
-    @GetMapping("tag")
-    public TagListResponse tags(@RequestParam(required = false) String query) {
-        return new TagListResponse(List.of());
     }
 }
