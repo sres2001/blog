@@ -6,15 +6,28 @@ import javax.persistence.*;
 @Entity
 @Table(name = "post_comments")
 public class PostComment {
-    private int id;
-    private PostComment parent;
-    private Post post;
-    private User user;
-    private Date time;
-    private String text;
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", updatable = false)
+    private PostComment parent;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "post_id", nullable = false, updatable = false)
+    private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    private User user;
+
+    @Column(name = "time", nullable = false)
+    private Date time;
+
+    @Column(name = "text", nullable = false, columnDefinition = "TEXT")
+    private String text;
+
     public int getId() {
         return id;
     }
@@ -23,8 +36,6 @@ public class PostComment {
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id", updatable = false)
     public PostComment getParent() {
         return parent;
     }
@@ -33,8 +44,6 @@ public class PostComment {
         this.parent = parent;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "post_id", nullable = false, updatable = false)
     public Post getPost() {
         return post;
     }
@@ -43,8 +52,6 @@ public class PostComment {
         this.post = post;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false, updatable = false)
     public User getUser() {
         return user;
     }
@@ -53,7 +60,6 @@ public class PostComment {
         this.user = user;
     }
 
-    @Column(name = "time", nullable = false)
     public Date getTime() {
         return time;
     }
@@ -62,7 +68,6 @@ public class PostComment {
         this.time = time;
     }
 
-    @Column(name = "text", nullable = false, columnDefinition = "TEXT")
     public String getText() {
         return text;
     }

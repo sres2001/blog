@@ -1,0 +1,498 @@
+databaseChangeLog:
+- changeSet:
+    id: 1623843665437-1
+    author: serger (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: code
+            type: TINYTEXT
+        - column:
+            constraints:
+              nullable: false
+            name: secret_code
+            type: TINYTEXT
+        - column:
+            constraints:
+              nullable: false
+            name: time
+            type: datetime
+        tableName: captcha_codes
+- changeSet:
+    id: 1623843665437-2
+    author: serger (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: code
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: value
+            type: VARCHAR(255)
+        tableName: global_settings
+- changeSet:
+    id: 1623843665437-3
+    author: serger (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            name: next_val
+            type: BIGINT
+        tableName: hibernate_sequence
+- changeSet:
+    id: 1623843665437-4
+    author: serger (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: text
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            name: time
+            type: datetime
+        - column:
+            name: parent_id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: post_id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: INT
+        tableName: post_comments
+- changeSet:
+    id: 1623843665437-5
+    author: serger (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: time
+            type: datetime
+        - column:
+            constraints:
+              nullable: false
+            name: value
+            type: TINYINT(3)
+        - column:
+            constraints:
+              nullable: false
+            name: post_id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: INT
+        tableName: post_votes
+- changeSet:
+    id: 1623843665437-6
+    author: serger (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: is_active
+            type: TINYINT(3)
+        - column:
+            constraints:
+              nullable: false
+            name: moderation_status
+            type: ENUM('DECLINED', 'ACCEPTED', 'NEW')
+        - column:
+            constraints:
+              nullable: false
+            name: text
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            name: time
+            type: datetime
+        - column:
+            constraints:
+              nullable: false
+            name: title
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: view_count
+            type: INT
+        - column:
+            name: moderator_id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: INT
+        tableName: posts
+- changeSet:
+    id: 1623843665437-7
+    author: serger (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: post_id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: tag_id
+            type: INT
+        tableName: tag2post
+- changeSet:
+    id: 1623843665437-8
+    author: serger (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        tableName: tags
+- changeSet:
+    id: 1623843665437-9
+    author: serger (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            name: code
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: email
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: is_moderator
+            type: TINYINT(3)
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: password
+            type: VARCHAR(255)
+        - column:
+            name: photo
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            name: reg_time
+            type: datetime
+        tableName: users
+- changeSet:
+    id: 1623843665437-10
+    author: serger (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: user_id
+        indexName: FK5lidm6cqbc7u4xhqpxm898qme
+        tableName: posts
+- changeSet:
+    id: 1623843665437-11
+    author: serger (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: moderator_id
+        indexName: FK6m7nr3iwh1auer2hk7rd05riw
+        tableName: posts
+- changeSet:
+    id: 1623843665437-12
+    author: serger (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: post_id
+        indexName: FK9jh5u17tmu1g7xnlxa77ilo3u
+        tableName: post_votes
+- changeSet:
+    id: 1623843665437-13
+    author: serger (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: user_id
+        indexName: FK9q09ho9p8fmo6rcysnci8rocc
+        tableName: post_votes
+- changeSet:
+    id: 1623843665437-14
+    author: serger (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: post_id
+        indexName: FKaawaqxjs3br8dw5v90w7uu514
+        tableName: post_comments
+- changeSet:
+    id: 1623843665437-15
+    author: serger (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: parent_id
+        indexName: FKc3b7s6wypcsvua2ycn4o1lv2c
+        tableName: post_comments
+- changeSet:
+    id: 1623843665437-16
+    author: serger (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: tag_id
+        indexName: FKjou6suf2w810t2u3l96uasw3r
+        tableName: tag2post
+- changeSet:
+    id: 1623843665437-17
+    author: serger (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: post_id
+        indexName: FKpjoedhh4h917xf25el3odq20i
+        tableName: tag2post
+- changeSet:
+    id: 1623843665437-18
+    author: serger (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: user_id
+        indexName: FKsnxoecngu89u3fh4wdrgf0f2g
+        tableName: post_comments
+- changeSet:
+    id: 1623843665437-19
+    author: serger (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: posts
+        constraintName: FK5lidm6cqbc7u4xhqpxm898qme
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+- changeSet:
+    id: 1623843665437-20
+    author: serger (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: moderator_id
+        baseTableName: posts
+        constraintName: FK6m7nr3iwh1auer2hk7rd05riw
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+- changeSet:
+    id: 1623843665437-21
+    author: serger (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: post_id
+        baseTableName: post_votes
+        constraintName: FK9jh5u17tmu1g7xnlxa77ilo3u
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: id
+        referencedTableName: posts
+        validate: true
+- changeSet:
+    id: 1623843665437-22
+    author: serger (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: post_votes
+        constraintName: FK9q09ho9p8fmo6rcysnci8rocc
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+- changeSet:
+    id: 1623843665437-23
+    author: serger (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: post_id
+        baseTableName: post_comments
+        constraintName: FKaawaqxjs3br8dw5v90w7uu514
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: id
+        referencedTableName: posts
+        validate: true
+- changeSet:
+    id: 1623843665437-24
+    author: serger (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: parent_id
+        baseTableName: post_comments
+        constraintName: FKc3b7s6wypcsvua2ycn4o1lv2c
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: id
+        referencedTableName: post_comments
+        validate: true
+- changeSet:
+    id: 1623843665437-25
+    author: serger (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: tag_id
+        baseTableName: tag2post
+        constraintName: FKjou6suf2w810t2u3l96uasw3r
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: id
+        referencedTableName: tags
+        validate: true
+- changeSet:
+    id: 1623843665437-26
+    author: serger (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: post_id
+        baseTableName: tag2post
+        constraintName: FKpjoedhh4h917xf25el3odq20i
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: id
+        referencedTableName: posts
+        validate: true
+- changeSet:
+    id: 1623843665437-27
+    author: serger (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: post_comments
+        constraintName: FKsnxoecngu89u3fh4wdrgf0f2g
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+

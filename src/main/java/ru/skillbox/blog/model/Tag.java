@@ -10,11 +10,13 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "tags")
 public class Tag {
-    private int id;
-    private String name;
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
     public int getId() {
         return id;
     }
@@ -23,7 +25,6 @@ public class Tag {
         this.id = id;
     }
 
-    @Column(name = "name", nullable = false)
     public String getName() {
         return name;
     }

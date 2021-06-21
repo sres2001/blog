@@ -5,11 +5,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.skillbox.blog.api.response.InitResponse;
 import ru.skillbox.blog.api.response.SettingsResponse;
-import ru.skillbox.blog.service.BlogInformation;
 import ru.skillbox.blog.dto.mapper.ResponseMapper;
+import ru.skillbox.blog.service.BlogInformation;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("api")
 public class ApiGeneralController {
 
     private final InitResponse initResponse;

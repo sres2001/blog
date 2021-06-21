@@ -1,0 +1,58 @@
+databaseChangeLog:
+- changeSet:
+    id: 1623912557000-1
+    author: serger
+    changes:
+      - insert:
+          tableName: global_settings
+          columns:
+            - column:
+                name: id
+                value: 1
+            - column:
+                name: code
+                value: MULTIUSER_MODE
+            - column:
+                name: name
+                value: Многопользовательский режим
+            - column:
+                name: value
+                value: YES
+- changeSet:
+    id: 1623912557000-2
+    author: serger
+    changes:
+      - insert:
+          tableName: global_settings
+          columns:
+            - column:
+                name: id
+                value: 2
+            - column:
+                name: code
+                value: POST_PREMODERATION
+            - column:
+                name: name
+                value: Премодерация постов
+            - column:
+                name: value
+                value: NO
+- changeSet:
+    id: 1623912557000-3
+    author: serger
+    changes:
+      - insert:
+          tableName: global_settings
+          columns:
+            - column:
+                name: id
+                value: 3
+            - column:
+                name: code
+                value: STATISTICS_IS_PUBLIC
+            - column:
+                name: name
+                value: Показывать всем статистику блога
+            - column:
+                name: value
+                value: NO

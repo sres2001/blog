@@ -10,13 +10,19 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "global_settings")
 public class GlobalSetting {
-    private int id;
-    private String code;
-    private String name;
-    private String value;
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
+    @Column(name = "code", nullable = false)
+    private String code;
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "value", nullable = false)
+    private String value;
+
     public int getId() {
         return id;
     }
@@ -25,7 +31,6 @@ public class GlobalSetting {
         this.id = id;
     }
 
-    @Column(name = "code", nullable = false)
     public String getCode() {
         return code;
     }
@@ -34,7 +39,6 @@ public class GlobalSetting {
         this.code = code;
     }
 
-    @Column(name = "name", nullable = false)
     public String getName() {
         return name;
     }
@@ -43,7 +47,6 @@ public class GlobalSetting {
         this.name = name;
     }
 
-    @Column(name = "value", nullable = false)
     public String getValue() {
         return value;
     }

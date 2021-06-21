@@ -11,13 +11,19 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "captcha_codes")
 public class CaptchaCode {
-    private int id;
-    private Date time;
-    private String code;
-    private String secretCode;
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
+    @Column(name = "time", nullable = false)
+    private Date time;
+
+    @Column(name = "code", nullable = false, columnDefinition = "TINYTEXT")
+    private String code;
+
+    @Column(name = "secret_code", nullable = false, columnDefinition = "TINYTEXT")
+    private String secretCode;
+
     public int getId() {
         return id;
     }
@@ -26,7 +32,6 @@ public class CaptchaCode {
         this.id = id;
     }
 
-    @Column(name = "time", nullable = false)
     public Date getTime() {
         return time;
     }
@@ -35,7 +40,6 @@ public class CaptchaCode {
         this.time = time;
     }
 
-    @Column(name = "code", nullable = false, columnDefinition = "TINYTEXT")
     public String getCode() {
         return code;
     }
@@ -44,7 +48,6 @@ public class CaptchaCode {
         this.code = code;
     }
 
-    @Column(name = "secret_code", nullable = false, columnDefinition = "TINYTEXT")
     public String getSecretCode() {
         return secretCode;
     }

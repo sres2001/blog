@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.skillbox.blog.api.response.AuthCheckResponse;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("api/auth")
 public class ApiAuthController {
 
     @GetMapping("check")

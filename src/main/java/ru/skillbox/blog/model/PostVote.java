@@ -6,14 +6,24 @@ import javax.persistence.*;
 @Entity
 @Table(name = "post_votes")
 public class PostVote {
-    private int id;
-    private User user;
-    private Post post;
-    private Date time;
-    private byte value;
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "post_id", nullable = false, updatable = false)
+    private Post post;
+
+    @Column(name = "time", nullable = false)
+    private Date time;
+
+    @Column(name = "value", nullable = false)
+    private byte value;
+
     public int getId() {
         return id;
     }
@@ -22,8 +32,6 @@ public class PostVote {
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false, updatable = false)
     public User getUser() {
         return user;
     }
@@ -32,8 +40,6 @@ public class PostVote {
         this.user = user;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "post_id", nullable = false, updatable = false)
     public Post getPost() {
         return post;
     }
@@ -42,8 +48,6 @@ public class PostVote {
         this.post = post;
     }
 
-
-    @Column(name = "time", nullable = false)
     public Date getTime() {
         return time;
     }
@@ -52,7 +56,6 @@ public class PostVote {
         this.time = time;
     }
 
-    @Column(name = "value", nullable = false)
     public byte getValue() {
         return value;
     }

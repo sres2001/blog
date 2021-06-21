@@ -11,7 +11,7 @@ import ru.skillbox.blog.service.PostService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("api/post")
 public class ApiPostController {
 
     private final PostService postService;
@@ -20,7 +20,7 @@ public class ApiPostController {
         this.postService = postService;
     }
 
-    @GetMapping("post")
+    @GetMapping
     public PostListResponse posts(
             @RequestParam(required = false, defaultValue = "0") int offset,
             @RequestParam(required = false, defaultValue = "10") int limit,
