@@ -4,27 +4,27 @@ import java.util.List;
 
 public class PostListResponse {
 
-    private int count;
-    private List<PostResponse> posts;
+    private long count;
+    private List<PostListItemResponse> posts;
 
-    public PostListResponse(int count, List<PostResponse> posts) {
+    public PostListResponse(long count, List<PostListItemResponse> posts) {
         this.count = count;
         this.posts = posts;
     }
 
-    public int getCount() {
+    public long getCount() {
         return count;
     }
 
-    public void setCount(int count) {
+    public void setCount(long count) {
         this.count = count;
     }
 
-    public List<PostResponse> getPosts() {
+    public List<PostListItemResponse> getPosts() {
         return posts;
     }
 
-    public void setPosts(List<PostResponse> posts) {
+    public void setPosts(List<PostListItemResponse> posts) {
         this.posts = posts;
     }
 }

@@ -1,13 +1,15 @@
 package ru.skillbox.blog.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.skillbox.blog.api.request.PostListMode;
 import ru.skillbox.blog.api.response.PostListResponse;
+import ru.skillbox.blog.dto.PostListItemDto;
+import ru.skillbox.blog.dto.mapper.ResponseMapper;
 import ru.skillbox.blog.service.PostService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/post")
@@ -20,23 +22,12 @@ public class ApiPostController {
     }
 
     @GetMapping
-    public PostListResponse posts(
+    public PostListResponse getPosts(
             @RequestParam(required = false, defaultValue = "0") int offset,
             @RequestParam(required = false, defaultValue = "10") int limit,
-            @RequestParam(required = false, defaultValue = "recent") String mode
+            @RequestParam(required = false, defaultValue = "recent") PostListMode mode
     ) {
-        //TODO:
-        switch (mode) {
-            case "popular":
-                break;
-            case "best":
-                break;
-            case "early":
-                break;
-            case "recent":
-            default:
-                break;
-        }
-        return new PostListResponse(0, List.of());
+        Page<PostListItemDto> listDto = postService.getPosts(offset, limit, mode);
+        return ResponseMapper.toPostListResponse(listDto);
     }
 }
