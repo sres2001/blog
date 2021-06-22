@@ -5,3 +5,5 @@ databaseChangeLog:
       file: db/changelog/002-config.yaml
   - include:
       file: db/changelog/003-demo-data.yaml
+  - include:
+      file: db/changelog/004-demo-data-fillers.yaml
