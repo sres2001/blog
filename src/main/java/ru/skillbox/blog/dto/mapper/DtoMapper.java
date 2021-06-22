@@ -1,29 +1,28 @@
 package ru.skillbox.blog.dto.mapper;
 
-import org.jsoup.Jsoup;
 import org.springframework.data.domain.Page;
 import ru.skillbox.blog.dto.PostListItemDto;
 import ru.skillbox.blog.dto.UserDto;
-import ru.skillbox.blog.model.PostView;
+import ru.skillbox.blog.model.PostListItem;
 import ru.skillbox.blog.model.User;
 
 public class DtoMapper {
 
-    public static Page<PostListItemDto> toPostListDto(Page<PostView> postsPage) {
+    public static Page<PostListItemDto> toPostListDto(Page<PostListItem> postsPage) {
         return postsPage.map(DtoMapper::toPostListDto);
     }
 
-    public static PostListItemDto toPostListDto(PostView postView) {
+    public static PostListItemDto toPostListDto(PostListItem item) {
         PostListItemDto dto = new PostListItemDto();
-        dto.setId(postView.getId());
-        dto.setTimestamp(postView.getTime().toInstant().getEpochSecond());
-        dto.setUser(toUserDto(postView.getUser()));
-        dto.setTitle(postView.getTitle());
-        dto.setAnnounce(toAnnounce(postView.getText()));
-        dto.setLikeCount(postView.getLikeCount());
-        dto.setDislikeCount(postView.getDislikeCount());
-        dto.setCommentCount(postView.getCommentCount());
-        dto.setViewCount(postView.getViewCount());
+        dto.setId(item.getId());
+        dto.setTimestamp(item.getTime().toInstant().getEpochSecond());
+        dto.setUser(toUserDto(item.getUser()));
+        dto.setTitle(item.getTitle());
+        dto.setAnnounce(toAnnounce(item.getText()));
+        dto.setLikeCount(item.getLikeCount());
+        dto.setDislikeCount(item.getDislikeCount());
+        dto.setCommentCount(item.getCommentCount());
+        dto.setViewCount(item.getViewCount());
         return dto;
     }
 
@@ -35,7 +34,7 @@ public class DtoMapper {
     }
 
     private static String toAnnounce(String html) {
-        String text = Jsoup.parse(html).text();
+        String text = html.replaceAll("<.*?>", "");
         if (text.length() > 150) {
             return text.substring(0, 147) + "...";
         }

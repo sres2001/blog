@@ -8,16 +8,16 @@ import org.springframework.stereotype.Service;
 import ru.skillbox.blog.api.request.PostListMode;
 import ru.skillbox.blog.dto.PostListItemDto;
 import ru.skillbox.blog.dto.mapper.DtoMapper;
-import ru.skillbox.blog.model.PostView;
-import ru.skillbox.blog.repository.PostViewRepository;
+import ru.skillbox.blog.model.PostListItem;
+import ru.skillbox.blog.repository.PostListItemRepository;
 import ru.skillbox.blog.service.PostService;
 
 @Service
 public class PostServiceImpl implements PostService {
 
-    private final PostViewRepository repository;
+    private final PostListItemRepository repository;
 
-    public PostServiceImpl(PostViewRepository repository) {
+    public PostServiceImpl(PostListItemRepository repository) {
         this.repository = repository;
     }
 
@@ -39,7 +39,7 @@ public class PostServiceImpl implements PostService {
                 pageable = PageRequest.of(offset / limit, limit, Sort.by(Sort.Direction.DESC, "time"));
                 break;
         }
-        Page<PostView> page = repository.findAll(pageable);
+        Page<PostListItem> page = repository.findAll(pageable);
         return DtoMapper.toPostListDto(page);
     }
 }

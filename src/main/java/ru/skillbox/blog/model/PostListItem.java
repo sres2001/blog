@@ -30,7 +30,7 @@ import java.util.Date;
         "  group by post_id\n" +
         ")\n" +
         "csub on psub.id = csub.post_id")
-public class PostView {
+public class PostListItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
