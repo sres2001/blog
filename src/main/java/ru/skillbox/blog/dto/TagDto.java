@@ -1,9 +1,14 @@
-package ru.skillbox.blog.api.response;
+package ru.skillbox.blog.dto;
 
-public class TagResponse {
+public class TagDto {
 
     private String name;
     private double weight;
+
+    public TagDto(String name, double weight) {
+        this.name = name;
+        this.weight = weight;
+    }
 
     public String getName() {
         return name;

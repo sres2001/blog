@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.skillbox.blog.api.response.InitResponse;
 import ru.skillbox.blog.api.response.SettingsResponse;
 import ru.skillbox.blog.api.response.TagListResponse;
+import ru.skillbox.blog.dto.TagDto;
 import ru.skillbox.blog.dto.mapper.ResponseMapper;
 import ru.skillbox.blog.service.BlogInformation;
 import ru.skillbox.blog.service.GlobalSettingService;
+import ru.skillbox.blog.service.TagService;
 
 import java.util.List;
 
@@ -19,10 +21,16 @@ public class ApiGeneralController {
 
     private final InitResponse initResponse;
     private final GlobalSettingService globalSettingsService;
+    private final TagService tagService;
 
-    public ApiGeneralController(BlogInformation blogInformation, GlobalSettingService globalSettingsService) {
+    public ApiGeneralController(
+            BlogInformation blogInformation,
+            GlobalSettingService globalSettingsService,
+            TagService tagService
+    ) {
         this.initResponse = ResponseMapper.toInitResponse(blogInformation);
         this.globalSettingsService = globalSettingsService;
+        this.tagService = tagService;
     }
 
     @GetMapping("init")
@@ -41,6 +49,7 @@ public class ApiGeneralController {
 
     @GetMapping("tag")
     public TagListResponse tags(@RequestParam(required = false) String query) {
-        return new TagListResponse(List.of());
+        List<TagDto> tags = tagService.listTagsWithWeights(query);
+        return ResponseMapper.toTagListResponse(tags);
     }
 }

@@ -1,14 +1,13 @@
 package ru.skillbox.blog.dto.mapper;
 
 import org.springframework.data.domain.Page;
-import ru.skillbox.blog.api.response.InitResponse;
-import ru.skillbox.blog.api.response.PostListResponse;
-import ru.skillbox.blog.api.response.PostListItemResponse;
-import ru.skillbox.blog.api.response.UserResponse;
+import ru.skillbox.blog.api.response.*;
 import ru.skillbox.blog.dto.PostListItemDto;
+import ru.skillbox.blog.dto.TagDto;
 import ru.skillbox.blog.dto.UserDto;
 import ru.skillbox.blog.service.BlogInformation;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ResponseMapper {
@@ -48,6 +47,19 @@ public class ResponseMapper {
         UserResponse response = new UserResponse();
         response.setId(dto.getId());
         response.setName(dto.getName());
+        return response;
+    }
+
+    public static TagListResponse toTagListResponse(List<TagDto> tags) {
+        return new TagListResponse(tags.stream()
+                .map(ResponseMapper::toTagResponse)
+                .collect(Collectors.toList()));
+    }
+
+    private static TagResponse toTagResponse(TagDto dto) {
+        TagResponse response = new TagResponse();
+        response.setName(dto.getName());
+        response.setWeight(dto.getWeight());
         return response;
     }
 }
