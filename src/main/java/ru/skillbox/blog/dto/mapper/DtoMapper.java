@@ -15,7 +15,7 @@ public class DtoMapper {
     public static PostListItemDto toPostListDto(PostListItem item) {
         PostListItemDto dto = new PostListItemDto();
         dto.setId(item.getId());
-        dto.setTimestamp(item.getTime().toInstant().getEpochSecond());
+        dto.setTimestampAsEpochSeconds(item.getTime().toInstant().getEpochSecond());
         dto.setUser(toUserDto(item.getUser()));
         dto.setTitle(item.getTitle());
         dto.setAnnounce(toAnnounce(item.getText()));

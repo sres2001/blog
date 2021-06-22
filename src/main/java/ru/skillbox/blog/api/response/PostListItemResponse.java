@@ -1,9 +1,12 @@
 package ru.skillbox.blog.api.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class PostListItemResponse {
 
     private int id;
-    private long timestamp;
+    @JsonProperty("timestamp")
+    private long timestampAsEpochSeconds;
     private UserResponse user;
     private String title;
     private String announce;
@@ -23,12 +26,12 @@ public class PostListItemResponse {
         this.id = id;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public long getTimestampAsEpochSeconds() {
+        return timestampAsEpochSeconds;
     }
 
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
+    public void setTimestampAsEpochSeconds(long timestampAsEpochSeconds) {
+        this.timestampAsEpochSeconds = timestampAsEpochSeconds;
     }
 
     public UserResponse getUser() {

@@ -33,7 +33,7 @@ public class ResponseMapper {
     public static PostListItemResponse toPostListItemResponse(PostListItemDto dto) {
         PostListItemResponse response = new PostListItemResponse();
         response.setId(dto.getId());
-        response.setTimestamp(dto.getTimestamp());
+        response.setTimestampAsEpochSeconds(dto.getTimestampAsEpochSeconds());
         response.setUser(toUserResponse(dto.getUser()));
         response.setTitle(dto.getTitle());
         response.setAnnounce(dto.getAnnounce());

@@ -3,7 +3,7 @@ package ru.skillbox.blog.dto;
 public class PostListItemDto {
 
     private int id;
-    private long timestamp;
+    private long timestampAsEpochSeconds;
     private UserDto user;
     private String title;
     private String announce;
@@ -20,12 +20,12 @@ public class PostListItemDto {
         this.id = id;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public long getTimestampAsEpochSeconds() {
+        return timestampAsEpochSeconds;
     }
 
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
+    public void setTimestampAsEpochSeconds(long timestampAsEpochSeconds) {
+        this.timestampAsEpochSeconds = timestampAsEpochSeconds;
     }
 
     public UserDto getUser() {
