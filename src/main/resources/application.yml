@@ -4,4 +4,14 @@ spring.datasource:
   username: root
   password: testtest
 
-spring.jpa.hibernate.ddl-auto: validate
+spring.jpa:
+  hibernate.ddl-auto: validate
+  show-sql: false
+
+blog:
+  title: DevPub
+  subtitle: Рассказы разработчиков
+  phone: +7 987 654-32-10
+  email: blog@nomail.ru
+  copyright: Сергей Решетник
+  copyrightFrom: 2021
