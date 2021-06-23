@@ -36,22 +36,26 @@ public class TagRepositoryImpl implements TagRepositoryCustom {
         q.groupBy(t.get("id"));
 
         List<Predicate> predicates = new ArrayList<>();
-        ParameterExpression<String> tagMask = null;
+        ParameterExpression<String> tagParameter = null;
         if (query != null && !query.isEmpty()) {
-            tagMask = cb.parameter(String.class);
-            predicates.add(cb.like(cb.lower(t.get("name")), tagMask));
+            tagParameter = cb.parameter(String.class);
+            predicates.add(cb.like(cb.lower(t.get("name")), tagParameter));
         }
-        predicates.add(cb.equal(p.get("isActive"), 1));
-        predicates.add(cb.equal(p.get("moderationStatus"), ModerationStatus.ACCEPTED));
-        ParameterExpression<Date> timeThreshold = cb.parameter(Date.class);
-        predicates.add(cb.lessThanOrEqualTo(p.get("time"), timeThreshold));
+        ParameterExpression<Byte> activeParameter = cb.parameter(Byte.class);
+        predicates.add(cb.equal(p.get("active"), activeParameter));
+        ParameterExpression<ModerationStatus> moderationStatusParameter = cb.parameter(ModerationStatus.class);
+        predicates.add(cb.equal(p.get("moderationStatus"), moderationStatusParameter));
+        ParameterExpression<Date> timeThresholdParameter = cb.parameter(Date.class);
+        predicates.add(cb.lessThanOrEqualTo(p.get("time"), timeThresholdParameter));
         q.where(predicates.toArray(new Predicate[0]));
 
         TypedQuery<TagAndCount> typedQuery = entityManager.createQuery(q);
-        if (tagMask != null) {
-            typedQuery.setParameter(tagMask, query.toLowerCase(Locale.ROOT) + "%");
+        if (tagParameter != null) {
+            typedQuery.setParameter(tagParameter, query.toLowerCase(Locale.ROOT) + "%");
         }
-        typedQuery.setParameter(timeThreshold, new Date(), TemporalType.TIMESTAMP);
+        typedQuery.setParameter(activeParameter, (byte)1);
+        typedQuery.setParameter(moderationStatusParameter, ModerationStatus.ACCEPTED);
+        typedQuery.setParameter(timeThresholdParameter, new Date(), TemporalType.TIMESTAMP);
         return typedQuery.getResultList();
     }
 }

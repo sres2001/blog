@@ -8,13 +8,10 @@ import java.util.Date;
 
 @Entity
 @Immutable
-@Subselect("select id, time, user_id, title, text, view_count,\n" +
+@Subselect("select psub.*,\n" +
         "coalesce(likes, 0) as likes, coalesce(dislikes, 0) as dislikes, coalesce(comments, 0) as comments from\n" +
-        "(select p.*\n" +
-        "  from posts p\n" +
-        " where p.is_active = 1\n" +
-        "   and p.moderation_status = 'ACCEPTED'\n" +
-        "   and p.time <= now()\n" +
+        "(select *\n" +
+        "   from posts\n" +
         ")\n" +
         "psub left join\n" +
         "(select post_id,\n" +
@@ -34,6 +31,14 @@ public class PostListItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+
+    @Column(name = "is_active", nullable = false)
+    private byte active;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "moderation_status", nullable = false,
+            columnDefinition = "enum('NEW', 'ACCEPTED', 'DECLINED')")
+    private ModerationStatus moderationStatus;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
@@ -66,6 +71,22 @@ public class PostListItem {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public byte getActive() {
+        return active;
+    }
+
+    public void setActive(byte active) {
+        this.active = active;
+    }
+
+    public ModerationStatus getModerationStatus() {
+        return moderationStatus;
+    }
+
+    public void setModerationStatus(ModerationStatus moderationStatus) {
+        this.moderationStatus = moderationStatus;
     }
 
     public User getUser() {

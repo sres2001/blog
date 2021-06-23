@@ -12,7 +12,7 @@ public class Post {
     private int id;
 
     @Column(name = "is_active", nullable = false)
-    private byte isActive;
+    private byte active;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "moderation_status", nullable = false,
@@ -51,12 +51,12 @@ public class Post {
         this.id = id;
     }
 
-    public byte getIsActive() {
-        return isActive;
+    public byte getActive() {
+        return active;
     }
 
-    public void setIsActive(byte isActive) {
-        this.isActive = isActive;
+    public void setActive(byte active) {
+        this.active = active;
     }
 
     public ModerationStatus getModerationStatus() {

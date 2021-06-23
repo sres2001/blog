@@ -8,25 +8,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.blog.api.request.PostListMode;
 import ru.skillbox.blog.dto.PostListItemDto;
-import ru.skillbox.blog.model.PostListItem;
-import ru.skillbox.blog.repository.PostListItemRepository;
+import ru.skillbox.blog.model.Post;
+import ru.skillbox.blog.repository.PostRepository;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@Transactional
 class PostServiceTest {
 
     @Autowired
     private PostService service;
 
     @Autowired
-    private PostListItemRepository repository;
+    private PostRepository postRepository;
 
     @Test
     @DisplayName("recent возвращает отсортированные и самые новые посты")
+    @Transactional
     public void testGetPosts() {
         Page<PostListItemDto> posts = service.getPosts(0, 10, PostListMode.RECENT);
         assertFalse(posts.isEmpty());
@@ -45,7 +45,7 @@ class PostServiceTest {
         assertTrue(maxOptional.isPresent());
         long maxTimestamp = maxOptional.get();
 
-        for (PostListItem item : repository.findAll()) {
+        for (Post item : postRepository.getAllPublished()) {
             assertTrue(item.getTime().toInstant().getEpochSecond() <= maxTimestamp);
         }
     }
