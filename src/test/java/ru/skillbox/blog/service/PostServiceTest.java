@@ -12,6 +12,7 @@ import ru.skillbox.blog.model.Post;
 import ru.skillbox.blog.repository.PostRepository;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,6 +48,23 @@ class PostServiceTest {
 
         for (Post item : postRepository.getAllPublished()) {
             assertTrue(item.getTime().toInstant().getEpochSecond() <= maxTimestamp);
+        }
+    }
+
+    @Test
+    @DisplayName("находим посты текстовым поиском")
+    @Transactional
+    public void testSearchPosts() {
+        String query = "слон";
+        Page<PostListItemDto> posts = service.searchPosts(0, 10, query);
+        assertFalse(posts.isEmpty());
+
+        Pattern pattern = Pattern.compile(query, Pattern.CASE_INSENSITIVE);
+        for (PostListItemDto item : posts) {
+            Optional<Post> postOptional = postRepository.findById(item.getId());
+            assertTrue(postOptional.isPresent());
+            Post post = postOptional.get();
+            assertTrue(pattern.matcher(post.getText()).find());
         }
     }
 }

@@ -8,12 +8,8 @@ import org.springframework.stereotype.Service;
 import ru.skillbox.blog.api.request.PostListMode;
 import ru.skillbox.blog.dto.PostListItemDto;
 import ru.skillbox.blog.dto.mapper.DtoMapper;
-import ru.skillbox.blog.model.ModerationStatus;
-import ru.skillbox.blog.model.PostListItem;
 import ru.skillbox.blog.repository.PostListItemRepository;
 import ru.skillbox.blog.service.PostService;
-
-import java.util.Date;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -43,11 +39,14 @@ public class PostServiceImpl implements PostService {
                 pageable = PageRequest.of(pageNumber, limit, Sort.by(Sort.Direction.DESC, "time"));
                 break;
         }
-        Page<PostListItem> page = repository.findByActiveAndModerationStatusAndTimeLessThanEqual(
-                (byte)1,
-                ModerationStatus.ACCEPTED,
-                new Date(),
-                pageable);
-        return DtoMapper.toPostListDto(page);
+        return DtoMapper.toPostListDto(repository.findPublished(pageable));
+    }
+
+    @Override
+    public Page<PostListItemDto> searchPosts(int offset, int limit, String query) {
+        return DtoMapper.toPostListDto(
+                repository.searchPublished(
+                        query,
+                        PageRequest.of(offset / limit, limit, Sort.by(Sort.Direction.DESC, "time"))));
     }
 }

@@ -30,4 +30,17 @@ public class ApiPostController {
         Page<PostListItemDto> listDto = postService.getPosts(offset, limit, mode);
         return ResponseMapper.toPostListResponse(listDto);
     }
+
+    @GetMapping("search")
+    public PostListResponse searchPosts(
+            @RequestParam(required = false, defaultValue = "0") int offset,
+            @RequestParam(required = false, defaultValue = "10") int limit,
+            @RequestParam(required = false) String query
+    ) {
+        if (query == null || query.isBlank()) {
+            return getPosts(offset, limit, PostListMode.RECENT);
+        }
+        Page<PostListItemDto> listDto = postService.searchPosts(offset, limit, query);
+        return ResponseMapper.toPostListResponse(listDto);
+    }
 }

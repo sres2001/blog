@@ -6,4 +6,6 @@ import ru.skillbox.blog.dto.PostListItemDto;
 
 public interface PostService {
     Page<PostListItemDto> getPosts(int offset, int limit, PostListMode mode);
+
+    Page<PostListItemDto> searchPosts(int offset, int limit, String query);
 }
