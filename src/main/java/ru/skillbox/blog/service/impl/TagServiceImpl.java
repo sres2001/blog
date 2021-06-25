@@ -25,7 +25,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public List<TagDto> listTagsWithWeights(String query)
     {
-        List<TagAndCount> queryResults = tagRepository.getTagsAndWeights(query);
+        List<TagAndCount> queryResults = tagRepository.getTagsAndPostsCounts(query);
         if (queryResults.isEmpty()) {
             return List.of();
         }

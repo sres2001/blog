@@ -2,12 +2,15 @@ package ru.skillbox.blog.dto.mapper;
 
 import org.springframework.data.domain.Page;
 import ru.skillbox.blog.api.response.*;
+import ru.skillbox.blog.dto.CalendarDto;
 import ru.skillbox.blog.dto.PostListItemDto;
 import ru.skillbox.blog.dto.TagDto;
 import ru.skillbox.blog.dto.UserDto;
 import ru.skillbox.blog.service.BlogInformation;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ResponseMapper {
@@ -60,6 +63,21 @@ public class ResponseMapper {
         TagResponse response = new TagResponse();
         response.setName(dto.getName());
         response.setWeight(dto.getWeight());
+        return response;
+    }
+
+    public static CalendarResponse toCalendarResponse(CalendarDto dto) {
+        CalendarResponse response = new CalendarResponse();
+        response.setYears(dto.getYears());
+        if (dto.getPosts().isEmpty()) {
+            response.setPosts(Map.of());
+        } else {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            response.setPosts(dto.getPosts().entrySet().stream()
+                    .collect(Collectors.toMap(
+                            e -> formatter.format(e.getKey()),
+                            Map.Entry::getValue)));
+        }
         return response;
     }
 }
