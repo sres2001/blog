@@ -38,13 +38,14 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                 new Date());
     }
 
-    @Query("select distinct year(time) from Post" +
-            " where active = 1 and moderationStatus = 'ACCEPTED' and time <= current_timestamp()")
+    @Query("select distinct year(time) as year from Post" +
+            " where active = 1 and moderationStatus = 'ACCEPTED' and time <= current_timestamp()" +
+            " order by year")
     List<Integer> getPublishedPostsYears();
 
-    @Query("select new ru.skillbox.blog.repository.DateAndCount(year(time), month(time), day(time), count(*)) from Post" +
+    @Query("select new ru.skillbox.blog.repository.DateAndCount(cast(time as date), count(*)) from Post" +
             " where active = 1 and moderationStatus = 'ACCEPTED' and time <= current_timestamp()" +
             "   and year(time) = :year" +
-            " group by year(time), month(time), day(time)")
+            " group by cast(time as date)")
     List<DateAndCount> getPublishedPostsCountsByDatesInYear(int year);
 }
