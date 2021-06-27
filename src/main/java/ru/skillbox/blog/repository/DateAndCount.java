@@ -1,16 +1,13 @@
 package ru.skillbox.blog.repository;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.util.Date;
 
 public class DateAndCount {
     private final LocalDate date;
     private final long postsCount;
 
-    public DateAndCount(Date date, long postsCount) {
-        this.date = LocalDate.ofInstant(Instant.ofEpochMilli(date.getTime()), ZoneOffset.UTC);
+    public DateAndCount(int year, int month, int day, long postsCount) {
+        this.date = LocalDate.of(year, month, day);
         this.postsCount = postsCount;
     }
 

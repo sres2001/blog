@@ -1,5 +1,18 @@
 package ru.skillbox.blog.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Optional;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +24,6 @@ import ru.skillbox.blog.dto.CalendarDto;
 import ru.skillbox.blog.dto.PostListItemDto;
 import ru.skillbox.blog.model.Post;
 import ru.skillbox.blog.repository.PostRepository;
-
-import java.util.Optional;
-import java.util.regex.Pattern;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class PostServiceTest {
@@ -47,7 +55,7 @@ class PostServiceTest {
         assertTrue(maxOptional.isPresent());
         long maxTimestamp = maxOptional.get();
 
-        for (Post item : postRepository.getAllPublished()) {
+        for (Post item : postRepository.findAllPublished()) {
             assertTrue(item.getTime().toInstant().getEpochSecond() <= maxTimestamp);
         }
     }
@@ -89,4 +97,35 @@ class PostServiceTest {
         assertNotNull(calendar.getPosts());
         assertFalse(calendar.getPosts().isEmpty());
     }
+
+    @Test
+    @DisplayName("находим посты по дате")
+    @Transactional
+    public void testByDate() {
+        LocalDate date = LocalDate.of(2021, Month.JUNE, 21);
+        Page<PostListItemDto> posts = service.getPostsByDate(0, 10, date);
+        assertFalse(posts.isEmpty());
+
+        for (PostListItemDto item : posts) {
+            Instant instant = Instant.ofEpochSecond(item.getTimestampAsEpochSeconds());
+            ZonedDateTime dateTime = ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
+            assertEquals(date, dateTime.toLocalDate());
+        }
+    }
+
+    @Test
+    @DisplayName("находим посты по тэгу")
+    @Transactional
+    public void testByTag() {
+        String tagName = "java";
+        Page<PostListItemDto> posts = service.getPostsByTag(0, 10, tagName);
+        assertFalse(posts.isEmpty());
+
+        for (PostListItemDto item : posts) {
+            Post post = postRepository.getOne(item.getId());
+            assertTrue(post.getTags().stream()
+                    .anyMatch(e -> e.getTag().getName().equalsIgnoreCase(tagName)));
+        }
+    }
+
 }

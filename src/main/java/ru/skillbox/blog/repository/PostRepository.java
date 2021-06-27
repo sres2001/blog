@@ -20,7 +20,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             Date timeThreshold,
             Pageable pageable);
 
-    default Page<Post> getAllPublished() {
+    default Page<Post> findAllPublished() {
         return findByActiveAndModerationStatusAndTimeLessThanEqual((byte) 1,
                 ModerationStatus.ACCEPTED,
                 new Date(),
@@ -43,9 +43,9 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             " order by year")
     List<Integer> getPublishedPostsYears();
 
-    @Query("select new ru.skillbox.blog.repository.DateAndCount(cast(time as date), count(*)) from Post" +
+    @Query("select new ru.skillbox.blog.repository.DateAndCount(year(time), month(time), day(time), count(*)) from Post" +
             " where active = 1 and moderationStatus = 'ACCEPTED' and time <= current_timestamp()" +
             "   and year(time) = :year" +
-            " group by cast(time as date)")
+            " group by year(time), month(time), day(time)")
     List<DateAndCount> getPublishedPostsCountsByDatesInYear(int year);
 }
