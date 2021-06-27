@@ -96,6 +96,9 @@ class PostServiceTest {
 
         assertNotNull(calendar.getPosts());
         assertFalse(calendar.getPosts().isEmpty());
+
+        LocalDate date = LocalDate.of(2021, Month.JUNE, 21);
+        assertEquals(9, calendar.getPosts().get(date));
     }
 
     @Test
