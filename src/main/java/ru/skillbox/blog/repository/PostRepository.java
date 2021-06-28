@@ -3,6 +3,7 @@ package ru.skillbox.blog.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.skillbox.blog.model.ModerationStatus;
@@ -48,4 +49,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "   and year(time) = :year" +
             " group by cast(time as date)")
     List<DateAndCount> getPublishedPostsCountsByDatesInYear(int year);
+
+    @Modifying
+    @Query("update Post p set p.viewCount = p.viewCount + 1 where p.id = :id")
+    void incrementViewCount(int id);
 }

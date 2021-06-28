@@ -2,10 +2,7 @@ package ru.skillbox.blog.dto.mapper;
 
 import org.springframework.data.domain.Page;
 import ru.skillbox.blog.api.response.*;
-import ru.skillbox.blog.dto.CalendarDto;
-import ru.skillbox.blog.dto.PostListItemDto;
-import ru.skillbox.blog.dto.TagDto;
-import ru.skillbox.blog.dto.UserDto;
+import ru.skillbox.blog.dto.*;
 import ru.skillbox.blog.service.BlogInformation;
 
 import java.time.format.DateTimeFormatter;
@@ -78,6 +75,41 @@ public class ResponseMapper {
                             e -> formatter.format(e.getKey()),
                             Map.Entry::getValue)));
         }
+        return response;
+    }
+
+    public static PostResponse toPostResponse(PostDto dto) {
+        PostResponse response = new PostResponse();
+        response.setId(dto.getId());
+        response.setTimestampAsEpochSeconds(dto.getTimestampAsEpochSeconds());
+        response.setActive(dto.isActive());
+        response.setUser(toUserResponse(dto.getUser()));
+        response.setTitle(dto.getTitle());
+        response.setText(dto.getText());
+        response.setLikeCount(dto.getLikeCount());
+        response.setDislikeCount(dto.getDislikeCount());
+        response.setViewCount(dto.getViewCount());
+        response.setComments(dto.getComments().stream()
+                .map(ResponseMapper::toCommentResponse)
+                .collect(Collectors.toList()));
+        response.setTags(dto.getTags());
+        return response;
+    }
+
+    private static CommentResponse toCommentResponse(CommentDto dto) {
+        CommentResponse response = new CommentResponse();
+        response.setId(dto.getId());
+        response.setTimestampAsEpochSeconds(dto.getTimestampAsEpochSeconds());
+        response.setText(dto.getText());
+        response.setUser(toCommentAuthorResponse(dto.getUser()));
+        return response;
+    }
+
+    private static CommentAuthorResponse toCommentAuthorResponse(CommentAuthorDto dto) {
+        CommentAuthorResponse response = new CommentAuthorResponse();
+        response.setId(dto.getId());
+        response.setName(dto.getName());
+        response.setPhoto(dto.getPhoto());
         return response;
     }
 }

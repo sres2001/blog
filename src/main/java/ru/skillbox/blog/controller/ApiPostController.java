@@ -2,13 +2,13 @@ package ru.skillbox.blog.controller;
 
 import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.skillbox.blog.api.request.PostListMode;
 import ru.skillbox.blog.api.response.PostListResponse;
+import ru.skillbox.blog.api.response.PostResponse;
+import ru.skillbox.blog.dto.PostDto;
 import ru.skillbox.blog.dto.mapper.ResponseMapper;
+import ru.skillbox.blog.exceptions.EntityNotFoundException;
 import ru.skillbox.blog.service.PostService;
 
 @RestController
@@ -29,6 +29,12 @@ public class ApiPostController {
     ) {
         return ResponseMapper.toPostListResponse(
                 postService.getPosts(offset, limit, mode));
+    }
+
+    @GetMapping("{id}")
+    public PostResponse getPost(@PathVariable int id) {
+        PostDto post = postService.findPostById(id, null).orElseThrow(EntityNotFoundException::new);
+        return ResponseMapper.toPostResponse(post);
     }
 
     @GetMapping("search")

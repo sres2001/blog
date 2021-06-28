@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.blog.api.request.PostListMode;
 import ru.skillbox.blog.dto.CalendarDto;
+import ru.skillbox.blog.dto.PostDto;
 import ru.skillbox.blog.dto.PostListItemDto;
 import ru.skillbox.blog.model.Post;
 import ru.skillbox.blog.repository.PostRepository;
@@ -129,6 +130,14 @@ class PostServiceTest {
             assertTrue(post.getTags().stream()
                     .anyMatch(e -> e.getTag().getName().equalsIgnoreCase(tagName)));
         }
+    }
+
+    @Test
+    @DisplayName("находим пост по идентификатору")
+    @Transactional
+    public void testFindPostById() {
+        Optional<PostDto> postOptional = service.findPostById(46, null);
+        assertTrue(postOptional.isPresent());
     }
 
 }

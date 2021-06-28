@@ -9,16 +9,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.blog.api.request.PostListMode;
 import ru.skillbox.blog.dto.CalendarDto;
+import ru.skillbox.blog.dto.PostDto;
 import ru.skillbox.blog.dto.PostListItemDto;
 import ru.skillbox.blog.dto.mapper.DtoMapper;
-import ru.skillbox.blog.model.PostListItem;
-import ru.skillbox.blog.model.Tag;
-import ru.skillbox.blog.repository.DateAndCount;
-import ru.skillbox.blog.repository.PostListItemRepository;
-import ru.skillbox.blog.repository.PostRepository;
-import ru.skillbox.blog.repository.TagRepository;
+import ru.skillbox.blog.model.*;
+import ru.skillbox.blog.repository.*;
 import ru.skillbox.blog.service.PostService;
 
 import java.util.List;
@@ -30,14 +28,38 @@ public class PostServiceImpl implements PostService {
     private final PostListItemRepository viewRepository;
     private final PostRepository entityRepository;
     private final TagRepository tagRepository;
+    private final PostCommentRepository postCommentRepository;
 
     public PostServiceImpl(
             PostListItemRepository viewRepository,
             PostRepository entityRepository,
-            TagRepository tagRepository) {
+            TagRepository tagRepository,
+            PostCommentRepository postCommentRepository) {
         this.viewRepository = viewRepository;
         this.entityRepository = entityRepository;
         this.tagRepository = tagRepository;
+        this.postCommentRepository = postCommentRepository;
+    }
+
+    @Override
+    @Transactional
+    public Optional<PostDto> findPostById(int postId, Integer viewerId) {
+        Optional<PostListItem> postOptional = viewRepository.findById(postId);
+        if (postOptional.isPresent()) {
+            if (viewerId != null) {
+                throw new UnsupportedOperationException();
+            }
+            PostListItem post = postOptional.get();
+            if (post.getActive() == 1 &&
+                    post.getModerationStatus() == ModerationStatus.ACCEPTED &&
+                    post.getTime().before(new Date())) {
+                entityRepository.incrementViewCount(postId);
+                List<PostComment> comments = postCommentRepository.findByPostId(postId);
+                List<Tag> tags = tagRepository.findPostTags(postId);
+                return Optional.of(DtoMapper.toPostDto(post, true, comments, tags));
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
