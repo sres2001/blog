@@ -6,6 +6,7 @@ import ru.skillbox.blog.dto.*;
 import ru.skillbox.blog.service.BlogInformation;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -110,6 +111,13 @@ public class ResponseMapper {
         response.setId(dto.getId());
         response.setName(dto.getName());
         response.setPhoto(dto.getPhoto());
+        return response;
+    }
+
+    public static CaptchaResponse toCaptchaResponse(CaptchaDto dto) {
+        CaptchaResponse response = new CaptchaResponse();
+        response.setSecret(dto.getSecret());
+        response.setImage("data:image/png;base64, " + Base64.getEncoder().encodeToString(dto.getImage()));
         return response;
     }
 }

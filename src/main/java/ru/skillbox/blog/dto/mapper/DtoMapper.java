@@ -81,4 +81,11 @@ public class DtoMapper {
         dto.setUser(toCommentAuthorDto(comment.getUser()));
         return dto;
     }
+
+    public static CaptchaDto toCaptchaDto(GeneratedCaptchaDto generated) {
+        CaptchaDto dto = new CaptchaDto();
+        dto.setSecret(generated.getId());
+        dto.setImage(generated.getPngImage());
+        return dto;
+    }
 }

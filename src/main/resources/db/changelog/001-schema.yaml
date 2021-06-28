@@ -66,6 +66,16 @@ databaseChangeLog:
             type: BIGINT
         tableName: hibernate_sequence
 - changeSet:
+    id: 1623843665437-3.5
+    author: serger
+    changes:
+      - insert:
+          tableName: hibernate_sequence
+          columns:
+            - column:
+                name: next_val
+                value: 1
+- changeSet:
     id: 1623843665437-4
     author: serger (generated)
     changes:

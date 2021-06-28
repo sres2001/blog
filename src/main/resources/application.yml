@@ -16,3 +16,4 @@ blog:
   email: blog@nomail.ru
   copyright: Сергей Решетник
   copyrightFrom: 2021
+  captchaExpiration: PT1H
