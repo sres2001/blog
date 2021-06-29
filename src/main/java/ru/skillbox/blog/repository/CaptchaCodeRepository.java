@@ -14,4 +14,6 @@ public interface CaptchaCodeRepository extends JpaRepository<CaptchaCode, Intege
     @Modifying
     @Query("delete from CaptchaCode c where c.time <= :threshold")
     void deleteOldCaptcha(Date threshold);
+
+    CaptchaCode findBySecretCode(String captchaSecret);
 }

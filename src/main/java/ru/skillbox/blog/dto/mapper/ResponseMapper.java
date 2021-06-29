@@ -120,4 +120,11 @@ public class ResponseMapper {
         response.setImage("data:image/png;base64, " + Base64.getEncoder().encodeToString(dto.getImage()));
         return response;
     }
+
+    public static RegisterResponse toRegisterResponse(RegisterResponseDto dto) {
+        RegisterResponse response = new RegisterResponse();
+        response.setResult(dto.isResult());
+        response.setErrors(dto.getErrors());
+        return response;
+    }
 }
