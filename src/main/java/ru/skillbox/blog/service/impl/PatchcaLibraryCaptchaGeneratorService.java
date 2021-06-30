@@ -18,11 +18,11 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Service
-public class CaptchaGeneratorServiceImpl implements CaptchaGeneratorService {
+public class PatchcaLibraryCaptchaGeneratorService implements CaptchaGeneratorService {
 
     private final ConfigurableCaptchaService captchaService;
 
-    public CaptchaGeneratorServiceImpl() {
+    public PatchcaLibraryCaptchaGeneratorService() {
         captchaService = new ConfigurableCaptchaService();
         captchaService.setWidth(85);
         captchaService.setHeight(30);
@@ -34,8 +34,8 @@ public class CaptchaGeneratorServiceImpl implements CaptchaGeneratorService {
         captchaService.setColorFactory(new SingleColorFactory(new Color(25, 60, 170)));
         captchaService.setFilterFactory(new CurvesRippleFilterFactory(captchaService.getColorFactory()));
         RandomFontFactory fontFactory = new RandomFontFactory();
-        fontFactory.setMinSize(30);
-        fontFactory.setMaxSize(30);
+        fontFactory.setMinSize(24);
+        fontFactory.setMaxSize(24);
         captchaService.setFontFactory(fontFactory);
     }
 
