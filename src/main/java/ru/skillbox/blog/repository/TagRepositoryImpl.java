@@ -25,7 +25,7 @@ public class TagRepositoryImpl implements TagRepositoryCustom {
     }
 
     @Override
-    public List<TagAndCount> getTagsAndWeights(String query) {
+    public List<TagAndCount> getTagsAndPostsCounts(String query) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<TagAndCount> q = cb.createQuery(TagAndCount.class);
         Root<PostTag> pt = q.from(PostTag.class);
