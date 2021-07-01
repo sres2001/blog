@@ -74,7 +74,7 @@ databaseChangeLog:
           columns:
             - column:
                 name: next_val
-                value: 1
+                value: 100
 - changeSet:
     id: 1623843665437-4
     author: serger (generated)
