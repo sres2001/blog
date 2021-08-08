@@ -1,6 +1,12 @@
 package ru.skillbox.blog.service.impl;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.blog.dto.CaptchaDto;
@@ -15,10 +21,6 @@ import ru.skillbox.blog.repository.UserRepository;
 import ru.skillbox.blog.service.AuthService;
 import ru.skillbox.blog.service.CaptchaGeneratorService;
 
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
@@ -32,18 +34,24 @@ public class AuthServiceImpl implements AuthService {
     private final Duration captchaExpiration;
     private final CaptchaGeneratorService captchaGeneratorService;
     private final UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
     public AuthServiceImpl(
             CaptchaCodeRepository captchaCodeRepository,
             @Value("${blog.captchaExpiration}") String captchaExpiration,
             CaptchaGeneratorService captchaGeneratorService,
-            UserRepository userRepository
+            UserRepository userRepository,
+            AuthenticationManager authenticationManager,
+            PasswordEncoder passwordEncoder
     ) {
         this.captchaCodeRepository = captchaCodeRepository;
         this.captchaExpiration = captchaExpiration == null || captchaExpiration.isEmpty() ? Duration.ofHours(1) :
                 Duration.parse(captchaExpiration);
         this.captchaGeneratorService = captchaGeneratorService;
         this.userRepository = userRepository;
+        this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -68,7 +76,7 @@ public class AuthServiceImpl implements AuthService {
         if (errors.isEmpty()) {
             User user = new User();
             user.setEmail(registerDto.getEmail());
-            user.setPassword(sha1(registerDto.getPassword()));
+            user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
             user.setName(registerDto.getName());
             user.setRegistrationTime(new Date());
             user.setRegistrationTime(new Date());
@@ -109,15 +117,11 @@ public class AuthServiceImpl implements AuthService {
         return !name.isBlank();
     }
 
-    private static String sha1(String input) {
-        MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("cannot hash password", e);
-        }
-        digest.reset();
-        digest.update(input.getBytes(StandardCharsets.UTF_8));
-        return String.format("%040x", new BigInteger(1, digest.digest()));
+    @Override
+    public User authenticateUser(String email, String password) {
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        return userRepository.getByEmailIgnoreCase(email).orElseThrow(() ->
+                new UsernameNotFoundException(String.format("Username %s not found", email)));
     }
 }

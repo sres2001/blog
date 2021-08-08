@@ -23,7 +23,7 @@ databaseChangeLog:
                 value: visbel1811@litra.ru
             - column:
                 name: password
-                value: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
+                value: $2a$12$.s.y.w4jm1BeaM/RvK/MRuOKC67gnu4nfaPRNVB/Opk3itTCheM6G
 - changeSet:
     id: 1623912557000-5
     author: serger
@@ -48,7 +48,7 @@ databaseChangeLog:
                 value: alex@litra.ru
             - column:
                 name: password
-                value: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
+                value: $2a$12$.s.y.w4jm1BeaM/RvK/MRuOKC67gnu4nfaPRNVB/Opk3itTCheM6G
 - changeSet:
     id: 1623912557000-6
     author: serger
@@ -73,7 +73,7 @@ databaseChangeLog:
                 value: JIEB@litra.ru
             - column:
                 name: password
-                value: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
+                value: $2a$12$.s.y.w4jm1BeaM/RvK/MRuOKC67gnu4nfaPRNVB/Opk3itTCheM6G
 - changeSet:
     id: 1623912557000-7
     author: serger
