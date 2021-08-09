@@ -2,13 +2,13 @@ package ru.skillbox.blog.api.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-public class AuthCheckResponse {
+public class LoginResponse {
 
     private boolean result;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private UserProfileResponse user;
 
-    public AuthCheckResponse(boolean result) {
+    public LoginResponse(boolean result) {
         this.result = result;
     }
 

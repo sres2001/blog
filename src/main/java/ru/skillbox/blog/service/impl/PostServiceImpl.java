@@ -125,4 +125,9 @@ public class PostServiceImpl implements PostService {
                 recent(offset, limit));
         return DtoMapper.toPostListDto(page);
     }
+
+    @Override
+    public long getModerationCountByAuthor(int userId) {
+        return entityRepository.countByUserIdAndModerationStatus(userId, ModerationStatus.NEW);
+    }
 }

@@ -99,4 +99,8 @@ public class User {
     public void setPhoto(String photo) {
         this.photo = photo;
     }
+
+    public boolean isModerator() {
+        return getIsModerator() == 1;
+    }
 }

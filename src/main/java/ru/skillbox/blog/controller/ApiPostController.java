@@ -1,6 +1,5 @@
 package ru.skillbox.blog.controller;
 
-import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.blog.api.request.PostListMode;
@@ -10,6 +9,8 @@ import ru.skillbox.blog.dto.PostDto;
 import ru.skillbox.blog.dto.mapper.ResponseMapper;
 import ru.skillbox.blog.exceptions.EntityNotFoundException;
 import ru.skillbox.blog.service.PostService;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("api/post")

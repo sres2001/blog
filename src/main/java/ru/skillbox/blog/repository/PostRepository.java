@@ -53,4 +53,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Modifying
     @Query("update Post p set p.viewCount = p.viewCount + 1 where p.id = :id")
     void incrementViewCount(int id);
+
+    long countByUserIdAndModerationStatus(int userId, ModerationStatus moderationStatus);
 }

@@ -127,4 +127,30 @@ public class ResponseMapper {
         response.setErrors(dto.getErrors());
         return response;
     }
+
+    public static LoginResponse toLoginResponse(UserProfileDto dto, long moderationCount) {
+        LoginResponse response = new LoginResponse(true);
+        response.setUser(toUserProfileResponse(dto, moderationCount));
+        return response;
+    }
+
+    private static UserProfileResponse toUserProfileResponse(UserProfileDto dto, long moderationCount) {
+        UserProfileResponse response = new UserProfileResponse();
+        response.setId(dto.getId());
+        response.setName(dto.getName());
+        response.setPhoto(dto.getPhoto());
+        response.setEmail(dto.getEmail());
+        if (dto.isModerator()) {
+            response.setModeration(true);
+            response.setSettings(true);
+        }
+        response.setModerationCount(moderationCount);
+        return response;
+    }
+
+    public static AuthCheckResponse toCheckResponse(UserProfileDto dto, long moderationCount) {
+        AuthCheckResponse response = new AuthCheckResponse(true);
+        response.setUser(toUserProfileResponse(dto, moderationCount));
+        return response;
+    }
 }

@@ -140,4 +140,11 @@ class PostServiceTest {
         assertTrue(postOptional.isPresent());
     }
 
+    @Test
+    @DisplayName("находим количество постов автора для модерации")
+    @Transactional
+    public void testGetModerationCountByAuthor() {
+        assertEquals(1, service.getModerationCountByAuthor(5));
+    }
+
 }
