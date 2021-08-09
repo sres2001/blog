@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
  * Copyright 2021 Connective Games LLC. All rights reserved.
  */
 public enum UserRole {
-    AUTHOR(Set.of(UserPermission.POST_WRITE, UserPermission.USER_LOGOUT)),
-    MODERATOR(Set.of(UserPermission.POST_MODERATE, UserPermission.USER_LOGOUT)),
-    ADMIN(Set.of(UserPermission.SETTINGS_WRITE, UserPermission.USER_LOGOUT));
+    AUTHOR(Set.of(UserPermission.POST_WRITE)),
+    MODERATOR(Set.of(UserPermission.POST_MODERATE)),
+    ADMIN(Set.of(UserPermission.SETTINGS_WRITE));
 
     private final Set<UserPermission> permissions;
 

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.blog.dto.CaptchaDto;
 import ru.skillbox.blog.dto.GeneratedCaptchaDto;
 import ru.skillbox.blog.dto.RegisterDto;
+import ru.skillbox.blog.dto.UserProfileDto;
 import ru.skillbox.blog.dto.mapper.DtoMapper;
 import ru.skillbox.blog.dto.mapper.RegisterResponseDto;
 import ru.skillbox.blog.model.CaptchaCode;
@@ -118,10 +119,17 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public User authenticateUser(String email, String password) {
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+    public UserProfileDto authenticateUser(String email, String password) {
+        Authentication authenticate = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password));
         SecurityContextHolder.getContext().setAuthentication(authenticate);
-        return userRepository.getByEmailIgnoreCase(email).orElseThrow(() ->
+        return getUser(email);
+    }
+
+    @Override
+    public UserProfileDto getUser(String email) {
+        User user = userRepository.getByEmailIgnoreCase(email).orElseThrow(() ->
                 new UsernameNotFoundException(String.format("Username %s not found", email)));
+        return DtoMapper.toUserProfileDto(user);
     }
 }

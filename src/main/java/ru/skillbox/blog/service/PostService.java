@@ -22,4 +22,6 @@ public interface PostService {
     Page<PostListItemDto> getPostsByDate(int offset, int limit, LocalDate date);
 
     Page<PostListItemDto> getPostsByTag(int offset, int limit, String tag);
+
+    long getModerationCountByAuthor(int userId);
 }

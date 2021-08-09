@@ -1,14 +1,16 @@
 package ru.skillbox.blog.controller;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.blog.api.request.LoginRequest;
 import ru.skillbox.blog.api.request.RegisterRequest;
 import ru.skillbox.blog.api.response.*;
+import ru.skillbox.blog.dto.UserProfileDto;
 import ru.skillbox.blog.dto.mapper.RequestMapper;
 import ru.skillbox.blog.dto.mapper.ResponseMapper;
 import ru.skillbox.blog.service.AuthService;
+import ru.skillbox.blog.service.PostService;
 
 import java.security.Principal;
 
@@ -17,14 +19,22 @@ import java.security.Principal;
 public class ApiAuthController {
 
     private final AuthService authService;
+    private final PostService postService;
 
-    public ApiAuthController(AuthService authService) {
+    public ApiAuthController(AuthService authService, PostService postService) {
         this.authService = authService;
+        this.postService = postService;
     }
 
     @GetMapping("check")
     public AuthCheckResponse check(Principal principal) {
-        return new AuthCheckResponse(principal != null);
+        if (principal != null) {
+            UserProfileDto user = authService.getUser(principal.getName());
+            long moderationCount = postService.getModerationCountByAuthor(user.getId());
+            return ResponseMapper.toCheckResponse(user, moderationCount);
+        } else {
+            return new AuthCheckResponse(false);
+        }
     }
 
     @GetMapping("captcha")
@@ -42,16 +52,21 @@ public class ApiAuthController {
     @PostMapping("login")
     public LoginResponse login(@RequestBody LoginRequest data) {
         try {
-            return ResponseMapper.toLoginResponse(
-                    authService.authenticateUser(data.getEmail(), data.getPassword()));
+            UserProfileDto user = authService.authenticateUser(data.getEmail(), data.getPassword());
+            long moderationCount = postService.getModerationCountByAuthor(user.getId());
+            return ResponseMapper.toLoginResponse(user, moderationCount);
         } catch (AuthenticationException e) {
             return new LoginResponse(false);
         }
     }
 
     @GetMapping("logout")
-    @PreAuthorize("hasAuthority('user:logout')")
-    public LogoutResponse logout() {
-        return new LogoutResponse(true);
+    public LogoutResponse logout(Principal principal) {
+        if (principal != null) {
+            SecurityContextHolder.getContext().setAuthentication(null);
+            return new LogoutResponse(true);
+        } else {
+            return new LogoutResponse(false);
+        }
     }
 }

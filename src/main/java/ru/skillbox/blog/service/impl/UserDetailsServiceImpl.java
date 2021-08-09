@@ -31,7 +31,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(() ->
                         new UsernameNotFoundException(String.format("Username %s not found", username)));
         Set<? extends GrantedAuthority> authorities;
-        if (user.getIsModerator() == 1) {
+        if (user.isModerator()) {
             authorities = Stream.of(UserRole.AUTHOR, UserRole.MODERATOR, UserRole.ADMIN)
                     .flatMap(userRole -> userRole.getGrantedAuthorities().stream())
                     .collect(Collectors.toSet());

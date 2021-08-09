@@ -88,4 +88,14 @@ public class DtoMapper {
         dto.setImage(generated.getPngImage());
         return dto;
     }
+
+    public static UserProfileDto toUserProfileDto(User user) {
+        UserProfileDto dto = new UserProfileDto();
+        dto.setId(user.getId());
+        dto.setName(user.getName());
+        dto.setPhoto(user.getPhoto());
+        dto.setEmail(user.getEmail());
+        dto.setModerator(user.isModerator());
+        return dto;
+    }
 }

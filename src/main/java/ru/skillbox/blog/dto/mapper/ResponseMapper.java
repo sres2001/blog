@@ -3,7 +3,6 @@ package ru.skillbox.blog.dto.mapper;
 import org.springframework.data.domain.Page;
 import ru.skillbox.blog.api.response.*;
 import ru.skillbox.blog.dto.*;
-import ru.skillbox.blog.model.User;
 import ru.skillbox.blog.service.BlogInformation;
 
 import java.time.format.DateTimeFormatter;
@@ -129,8 +128,29 @@ public class ResponseMapper {
         return response;
     }
 
-    public static LoginResponse toLoginResponse(User user) {
+    public static LoginResponse toLoginResponse(UserProfileDto dto, long moderationCount) {
         LoginResponse response = new LoginResponse(true);
+        response.setUser(toUserProfileResponse(dto, moderationCount));
+        return response;
+    }
+
+    private static UserProfileResponse toUserProfileResponse(UserProfileDto dto, long moderationCount) {
+        UserProfileResponse response = new UserProfileResponse();
+        response.setId(dto.getId());
+        response.setName(dto.getName());
+        response.setPhoto(dto.getPhoto());
+        response.setEmail(dto.getEmail());
+        if (dto.isModerator()) {
+            response.setModeration(true);
+            response.setSettings(true);
+        }
+        response.setModerationCount(moderationCount);
+        return response;
+    }
+
+    public static AuthCheckResponse toCheckResponse(UserProfileDto dto, long moderationCount) {
+        AuthCheckResponse response = new AuthCheckResponse(true);
+        response.setUser(toUserProfileResponse(dto, moderationCount));
         return response;
     }
 }
