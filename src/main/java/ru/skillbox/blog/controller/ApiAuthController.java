@@ -64,9 +64,7 @@ public class ApiAuthController {
     public LogoutResponse logout(Principal principal) {
         if (principal != null) {
             SecurityContextHolder.getContext().setAuthentication(null);
-            return new LogoutResponse(true);
-        } else {
-            return new LogoutResponse(false);
         }
+        return new LogoutResponse(true);
     }
 }

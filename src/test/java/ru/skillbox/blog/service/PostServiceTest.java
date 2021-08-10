@@ -136,7 +136,7 @@ class PostServiceTest {
     @DisplayName("находим пост по идентификатору")
     @Transactional
     public void testFindPostById() {
-        Optional<PostDto> postOptional = service.findPostById(46, null);
+        Optional<PostDto> postOptional = service.findPostById(46, null, false);
         assertTrue(postOptional.isPresent());
     }
 

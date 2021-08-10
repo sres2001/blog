@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.skillbox.blog.api.request.MyPostListStatus;
 import ru.skillbox.blog.api.request.PostListMode;
 import ru.skillbox.blog.dto.CalendarDto;
 import ru.skillbox.blog.dto.PostDto;
@@ -43,20 +44,25 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public Optional<PostDto> findPostById(int postId, Integer viewerId) {
+    public Optional<PostDto> findPostById(int postId, Integer viewerId, boolean viewerIsModerator) {
         Optional<PostListItem> postOptional = viewRepository.findById(postId);
         if (postOptional.isPresent()) {
-            if (viewerId != null) {
-                throw new UnsupportedOperationException();
-            }
             PostListItem post = postOptional.get();
-            if (post.getActive() == 1 &&
+
+            boolean postIsActive = post.getActive() == 1 &&
                     post.getModerationStatus() == ModerationStatus.ACCEPTED &&
-                    post.getTime().before(new Date())) {
-                entityRepository.incrementViewCount(postId);
+                    post.getTime().before(new Date());
+
+            boolean viewerIsAuthor = viewerId != null && post.getUser().getId() == viewerId;
+            boolean specialViewer = viewerIsModerator || viewerIsAuthor;
+
+            if (specialViewer || postIsActive) {
+                if (!specialViewer) {
+                    entityRepository.incrementViewCount(postId);
+                }
                 List<PostComment> comments = postCommentRepository.findByPostId(postId);
                 List<Tag> tags = tagRepository.findPostTags(postId);
-                return Optional.of(DtoMapper.toPostDto(post, true, comments, tags));
+                return Optional.of(DtoMapper.toPostDto(post, postIsActive, comments, tags));
             }
         }
         return Optional.empty();
@@ -124,6 +130,30 @@ public class PostServiceImpl implements PostService {
         Page<PostListItem> page = viewRepository.findPublishedByTag(tagOptional.get(),
                 recent(offset, limit));
         return DtoMapper.toPostListDto(page);
+    }
+
+    @Override
+    public Page<PostListItemDto> getUserPosts(int userId, int offset, int limit, MyPostListStatus status) {
+        int pageNumber = offset / limit;
+        Pageable pageable = PageRequest.of(pageNumber, limit, Sort.by(Sort.Direction.ASC, "time"));
+        if (status == MyPostListStatus.INACTIVE) {
+            return DtoMapper.toPostListDto(viewRepository.findByUserIdAndActive(userId, (byte) 0, pageable));
+        }
+        return DtoMapper.toPostListDto(
+                viewRepository.findByUserIdAndActiveAndModerationStatus(userId, (byte)1,
+                        getModerationStatusForQuery(status), pageable));
+    }
+
+    private ModerationStatus getModerationStatusForQuery(MyPostListStatus status) {
+        switch (status) {
+            case PENDING:
+                return ModerationStatus.NEW;
+            case DECLINED:
+                return ModerationStatus.DECLINED;
+            case PUBLISHED:
+            default:
+                return ModerationStatus.ACCEPTED;
+        }
     }
 
     @Override
