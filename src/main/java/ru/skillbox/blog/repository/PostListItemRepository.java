@@ -53,4 +53,15 @@ public interface PostListItemRepository extends PagingAndSortingRepository<PostL
             " where p.active = 1 and p.moderationStatus = 'ACCEPTED' and p.time <= current_timestamp()" +
             "   and pt.tag = :tag")
     Page<PostListItem> findPublishedByTag(Tag tag, Pageable pageable);
+
+    Page<PostListItem> findByUserIdAndActive(
+            int userId,
+            byte active,
+            Pageable pageable);
+
+    Page<PostListItem> findByUserIdAndActiveAndModerationStatus(
+            int userId,
+            byte active,
+            ModerationStatus moderationStatus,
+            Pageable pageable);
 }
