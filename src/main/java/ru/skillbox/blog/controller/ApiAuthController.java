@@ -30,7 +30,7 @@ public class ApiAuthController {
     public AuthCheckResponse check(Principal principal) {
         if (principal != null) {
             UserProfileDto user = authService.getUser(principal.getName());
-            long moderationCount = postService.getModerationCountByAuthor(user.getId());
+            long moderationCount = user.isModerator() ? postService.countPostsForModeration() : 0;
             return ResponseMapper.toCheckResponse(user, moderationCount);
         } else {
             return new AuthCheckResponse(false);
@@ -53,7 +53,7 @@ public class ApiAuthController {
     public LoginResponse login(@RequestBody LoginRequest data) {
         try {
             UserProfileDto user = authService.authenticateUser(data.getEmail(), data.getPassword());
-            long moderationCount = postService.getModerationCountByAuthor(user.getId());
+            long moderationCount = user.isModerator() ? postService.countPostsForModeration() : 0;
             return ResponseMapper.toLoginResponse(user, moderationCount);
         } catch (AuthenticationException e) {
             return new LoginResponse(false);

@@ -341,3 +341,34 @@ databaseChangeLog:
             - column:
                 name: view_count
                 value: 0
+- changeSet:
+    id: 1624331898000-10
+    author: serger
+    changes:
+      - insert:
+          tableName: posts
+          columns:
+            - column:
+                name: id
+                value: 47
+            - column:
+                name: is_active
+                value: 1
+            - column:
+                name: moderation_status
+                value: NEW
+            - column:
+                name: user_id
+                value: 5
+            - column:
+                name: time
+                valueDate: 2021-08-11 08:30:00
+            - column:
+                name: title
+                value: Проверяем счётчик постов на модерацию
+            - column:
+                name: text
+                value: Проверяем счётчик постов на модерацию
+            - column:
+                name: view_count
+                value: 0
