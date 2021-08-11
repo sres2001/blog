@@ -27,7 +27,7 @@ public interface PostService {
 
     Page<PostListItemDto> getUserPosts(int userId, int offset, int limit, MyPostListStatus status);
 
-    long getModerationCountByAuthor(int userId);
+    long countPostsForModeration();
 
     Page<PostListItemDto> getModeratorPosts(int moderatorId, int offset, int limit, ModeratorPostListStatus status);
 }

@@ -161,8 +161,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public long getModerationCountByAuthor(int userId) {
-        return entityRepository.countByUserIdAndModerationStatus(userId, ModerationStatus.NEW);
+    public long countPostsForModeration() {
+        return entityRepository.countByActiveAndModerationStatus((byte)1, ModerationStatus.NEW);
     }
 
     @Override
