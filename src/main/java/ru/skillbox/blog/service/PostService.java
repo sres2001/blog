@@ -2,6 +2,7 @@ package ru.skillbox.blog.service;
 
 import org.springframework.data.domain.Page;
 import ru.skillbox.blog.api.request.MyPostListStatus;
+import ru.skillbox.blog.api.request.ModeratorPostListStatus;
 import ru.skillbox.blog.api.request.PostListMode;
 import ru.skillbox.blog.dto.CalendarDto;
 import ru.skillbox.blog.dto.PostDto;
@@ -27,4 +28,6 @@ public interface PostService {
     Page<PostListItemDto> getUserPosts(int userId, int offset, int limit, MyPostListStatus status);
 
     long getModerationCountByAuthor(int userId);
+
+    Page<PostListItemDto> getModeratorPosts(int moderatorId, int offset, int limit, ModeratorPostListStatus status);
 }

@@ -1,26 +1,30 @@
 package ru.skillbox.blog.service.impl;
 
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.util.Date;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.skillbox.blog.api.request.ModeratorPostListStatus;
 import ru.skillbox.blog.api.request.MyPostListStatus;
 import ru.skillbox.blog.api.request.PostListMode;
 import ru.skillbox.blog.dto.CalendarDto;
 import ru.skillbox.blog.dto.PostDto;
 import ru.skillbox.blog.dto.PostListItemDto;
 import ru.skillbox.blog.dto.mapper.DtoMapper;
-import ru.skillbox.blog.model.*;
+import ru.skillbox.blog.model.ModerationStatus;
+import ru.skillbox.blog.model.PostComment;
+import ru.skillbox.blog.model.PostListItem;
+import ru.skillbox.blog.model.Tag;
 import ru.skillbox.blog.repository.*;
 import ru.skillbox.blog.service.PostService;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -159,5 +163,35 @@ public class PostServiceImpl implements PostService {
     @Override
     public long getModerationCountByAuthor(int userId) {
         return entityRepository.countByUserIdAndModerationStatus(userId, ModerationStatus.NEW);
+    }
+
+    @Override
+    public Page<PostListItemDto> getModeratorPosts(
+            int moderatorId,
+            int offset,
+            int limit,
+            ModeratorPostListStatus status
+    ) {
+        int pageNumber = offset / limit;
+        Pageable pageable = PageRequest.of(pageNumber, limit, Sort.by(Sort.Direction.ASC, "time"));
+        if (status == ModeratorPostListStatus.NEW) {
+            return DtoMapper.toPostListDto(
+                    viewRepository.findByActiveAndModerationStatus((byte) 1, ModerationStatus.NEW, pageable));
+        }
+        return DtoMapper.toPostListDto(
+                viewRepository.findByActiveAndModeratorIdAndModerationStatus((byte) 1, moderatorId,
+                        getModerationStatusForQuery(status), pageable));
+    }
+
+    private ModerationStatus getModerationStatusForQuery(ModeratorPostListStatus status) {
+        switch (status) {
+            case NEW:
+                return ModerationStatus.NEW;
+            case DECLINED:
+                return ModerationStatus.DECLINED;
+            case ACCEPTED:
+            default:
+                return ModerationStatus.ACCEPTED;
+        }
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.blog.api.request.MyPostListStatus;
+import ru.skillbox.blog.api.request.ModeratorPostListStatus;
 import ru.skillbox.blog.api.request.PostListMode;
 import ru.skillbox.blog.api.response.PostListResponse;
 import ru.skillbox.blog.api.response.PostResponse;
@@ -97,5 +98,18 @@ public class ApiPostController {
         int userId = authService.getUser(principal.getName()).getId();
         return ResponseMapper.toPostListResponse(
                 postService.getUserPosts(userId, offset, limit, status));
+    }
+
+    @GetMapping("moderation")
+    @PreAuthorize("hasAuthority('post:moderate')")
+    public PostListResponse getModeratorPosts(
+            Principal principal,
+            @RequestParam(required = false, defaultValue = "0") int offset,
+            @RequestParam(required = false, defaultValue = "10") int limit,
+            @RequestParam(required = false, defaultValue = "new") ModeratorPostListStatus status
+    ) {
+        int moderatorId = authService.getUser(principal.getName()).getId();
+        return ResponseMapper.toPostListResponse(
+                postService.getModeratorPosts(moderatorId, offset, limit, status));
     }
 }
