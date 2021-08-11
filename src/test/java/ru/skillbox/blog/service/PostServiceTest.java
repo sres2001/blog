@@ -141,10 +141,10 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("находим количество постов автора для модерации")
+    @DisplayName("находим количество постов, ожидающих модерацию")
     @Transactional
-    public void testGetModerationCountByAuthor() {
-        assertEquals(1, service.getModerationCountByAuthor(5));
+    public void testCountPostsForModeration() {
+        assertEquals(1, service.countPostsForModeration());
     }
 
 }
