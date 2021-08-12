@@ -4,24 +4,27 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.blog.api.request.ModeratorPostListStatus;
 import ru.skillbox.blog.api.request.MyPostListStatus;
 import ru.skillbox.blog.api.request.PostListMode;
-import ru.skillbox.blog.dto.AddPostRequestDto;
 import ru.skillbox.blog.dto.CalendarDto;
+import ru.skillbox.blog.dto.EditPostRequestDto;
 import ru.skillbox.blog.dto.PostDto;
 import ru.skillbox.blog.dto.PostListItemDto;
 import ru.skillbox.blog.dto.mapper.BaseResponseDto;
 import ru.skillbox.blog.dto.mapper.DtoMapper;
 import ru.skillbox.blog.model.*;
 import ru.skillbox.blog.repository.*;
+import ru.skillbox.blog.service.GlobalSettingService;
 import ru.skillbox.blog.service.PostService;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +36,7 @@ public class PostServiceImpl implements PostService {
     private final PostCommentRepository postCommentRepository;
     private final UserRepository userRepository;
     private final PostTagRepository postTagRepository;
+    private final GlobalSettingService globalSettingService;
 
     public PostServiceImpl(
             PostListItemRepository viewRepository,
@@ -40,13 +44,15 @@ public class PostServiceImpl implements PostService {
             TagRepository tagRepository,
             PostCommentRepository postCommentRepository,
             UserRepository userRepository,
-            PostTagRepository postTagRepository) {
+            PostTagRepository postTagRepository,
+            GlobalSettingService globalSettingService) {
         this.viewRepository = viewRepository;
         this.entityRepository = entityRepository;
         this.tagRepository = tagRepository;
         this.postCommentRepository = postCommentRepository;
         this.userRepository = userRepository;
         this.postTagRepository = postTagRepository;
+        this.globalSettingService = globalSettingService;
     }
 
     @Override
@@ -200,16 +206,18 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public BaseResponseDto addPost(AddPostRequestDto requestDto) {
+    public BaseResponseDto addPost(EditPostRequestDto requestDto) {
         Map<String, String> errors = new HashMap<>();
         validatePostData(requestDto, errors);
         BaseResponseDto responseDto = new BaseResponseDto();
         if (errors.isEmpty()) {
             User user = userRepository.getOne(requestDto.getUserId());
+            ModerationStatus moderationStatus = user.isModerator() || !globalSettingService.isPostPremoderation() ?
+                    ModerationStatus.ACCEPTED : ModerationStatus.NEW;
 
             Post post = new Post();
             post.setActive(requestDto.getActive());
-            post.setModerationStatus(ModerationStatus.NEW);
+            post.setModerationStatus(moderationStatus);
             post.setUser(user);
             post.setTime(validateTime(requestDto.getTimestamp()));
             post.setTitle(requestDto.getTitle());
@@ -226,20 +234,83 @@ public class PostServiceImpl implements PostService {
         return responseDto;
     }
 
-    private void createTags(AddPostRequestDto requestDto, Post post) {
+    @Transactional
+    @Override
+    public BaseResponseDto editPost(int id, EditPostRequestDto requestDto) {
+        Post post = entityRepository.getOne(id);
+        User editor = userRepository.getOne(requestDto.getUserId());
+        if (!editor.isModerator() && post.getUser().getId() != editor.getId()) {
+            throw new AccessDeniedException(String.format("User %s cannot edit the post.", editor.getId()));
+        }
+        Map<String, String> errors = new HashMap<>();
+        validatePostData(requestDto, errors);
+        BaseResponseDto responseDto = new BaseResponseDto();
+        if (errors.isEmpty()) {
+            ModerationStatus moderationStatus = editor.isModerator() || !globalSettingService.isPostPremoderation() ?
+                    ModerationStatus.ACCEPTED : ModerationStatus.NEW;
+
+            post.setActive(requestDto.getActive());
+            post.setModerationStatus(moderationStatus);
+            post.setTime(validateTime(requestDto.getTimestamp()));
+            post.setTitle(requestDto.getTitle());
+            post.setText(requestDto.getText());
+            recreateTags(requestDto, post);
+            entityRepository.save(post);
+
+            responseDto.setResult(true);
+        } else {
+            responseDto.setResult(false);
+            responseDto.setErrors(errors);
+        }
+        return responseDto;
+    }
+
+    private void createTags(EditPostRequestDto requestDto, Post post) {
         if (requestDto.getTags() != null) {
-            for (String tagName : requestDto.getTags()) {
-                Tag tag = tagRepository.findOneByNameIgnoreCase(tagName)
-                        .orElseGet(() -> tagRepository.save(new Tag(tagName)));
-                PostTag postTag = new PostTag();
-                postTag.setPost(post);
-                postTag.setTag(tag);
-                postTagRepository.save(postTag);
-            }
+            requestDto.getTags().forEach(tagName -> createPostTag(post, tagName));
         }
     }
 
-    private void validatePostData(AddPostRequestDto requestDto, Map<String, String> errors) {
+    private PostTag createPostTag(Post post, String tagName) {
+        PostTag postTag = new PostTag();
+        postTag.setPost(post);
+        postTag.setTag(createTag(tagName));
+        return postTagRepository.save(postTag);
+    }
+
+    private Tag createTag(String tagName) {
+        return tagRepository.findOneByNameIgnoreCase(tagName)
+                .orElseGet(() -> tagRepository.save(new Tag(tagName)));
+    }
+
+    private void recreateTags(EditPostRequestDto requestDto, Post post) {
+        if (requestDto.getTags() == null) {
+            post.getTags().clear();
+            return;
+        }
+
+        Map<String, PostTag> oldPostTags = post.getTags().stream().collect(Collectors.toMap(
+                postTag -> postTag.getTag().getName().toUpperCase(Locale.ROOT),
+                Function.identity()));
+
+        Map<String, String> newTags = requestDto.getTags().stream().collect(Collectors.toMap(
+                tagName -> tagName.toUpperCase(Locale.ROOT),
+                Function.identity()));
+
+        Set<String> tagsToCreate = new HashSet<>(newTags.keySet());
+        postTagRepository.deleteAll(oldPostTags.values());
+        tagsToCreate.removeAll(oldPostTags.keySet());
+
+        oldPostTags.keySet().removeAll(newTags.keySet());
+        post.getTags().removeAll(oldPostTags.values());
+
+        newTags.keySet().retainAll(tagsToCreate);
+        for (String tagName : newTags.values()) {
+            post.getTags().add(createPostTag(post, tagName));
+        }
+    }
+
+    private void validatePostData(EditPostRequestDto requestDto, Map<String, String> errors) {
         if (requestDto.getTitle() == null) {
             errors.put("title", "Заголовок не установлен");
         } else if (requestDto.getTitle().trim().length() < 3) {

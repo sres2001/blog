@@ -1,8 +1,8 @@
 package ru.skillbox.blog.dto.mapper;
 
-import ru.skillbox.blog.api.request.AddPostRequest;
+import ru.skillbox.blog.api.request.EditPostRequest;
 import ru.skillbox.blog.api.request.RegisterRequest;
-import ru.skillbox.blog.dto.AddPostRequestDto;
+import ru.skillbox.blog.dto.EditPostRequestDto;
 import ru.skillbox.blog.dto.RegisterDto;
 
 public class RequestMapper {
@@ -17,8 +17,8 @@ public class RequestMapper {
         return dto;
     }
 
-    public static AddPostRequestDto toAddPostDto(int userId, AddPostRequest request) {
-        AddPostRequestDto dto = new AddPostRequestDto();
+    public static EditPostRequestDto toEditPostDto(int userId, EditPostRequest request) {
+        EditPostRequestDto dto = new EditPostRequestDto();
         dto.setUserId(userId);
         dto.setTimestamp(request.getTimestamp());
         dto.setActive(request.getActive());

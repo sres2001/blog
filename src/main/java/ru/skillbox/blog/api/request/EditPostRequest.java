@@ -2,7 +2,7 @@ package ru.skillbox.blog.api.request;
 
 import java.util.Set;
 
-public class AddPostRequest {
+public class EditPostRequest {
 
     private long timestamp;
     private byte active;

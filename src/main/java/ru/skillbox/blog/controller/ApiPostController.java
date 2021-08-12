@@ -3,7 +3,7 @@ package ru.skillbox.blog.controller;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.blog.api.request.AddPostRequest;
+import ru.skillbox.blog.api.request.EditPostRequest;
 import ru.skillbox.blog.api.request.ModeratorPostListStatus;
 import ru.skillbox.blog.api.request.MyPostListStatus;
 import ru.skillbox.blog.api.request.PostListMode;
@@ -118,8 +118,16 @@ public class ApiPostController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('post:write')")
-    public BaseResponse addPost(Principal principal, @RequestBody AddPostRequest request) {
+    public BaseResponse addPost(Principal principal, @RequestBody EditPostRequest request) {
         UserDto user = authService.getUser(principal.getName());
-        return ResponseMapper.toBaseResponse(postService.addPost(RequestMapper.toAddPostDto(user.getId(), request)));
+        return ResponseMapper.toBaseResponse(postService.addPost(RequestMapper.toEditPostDto(user.getId(), request)));
+    }
+
+    @PutMapping("{id}")
+    @PreAuthorize("hasAnyAuthority('post:write', 'post:moderate')")
+    public BaseResponse editPost(Principal principal, @PathVariable int id, @RequestBody EditPostRequest request) {
+        UserDto user = authService.getUser(principal.getName());
+        return ResponseMapper.toBaseResponse(
+                postService.editPost(id, RequestMapper.toEditPostDto(user.getId(), request)));
     }
 }

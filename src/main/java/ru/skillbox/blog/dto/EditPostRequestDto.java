@@ -2,7 +2,7 @@ package ru.skillbox.blog.dto;
 
 import java.util.Set;
 
-public class AddPostRequestDto {
+public class EditPostRequestDto {
 
     private int userId;
     private long timestamp;
