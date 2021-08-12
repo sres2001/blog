@@ -128,13 +128,13 @@ public class ResponseMapper {
         return response;
     }
 
-    public static LoginResponse toLoginResponse(UserProfileDto dto, long moderationCount) {
+    public static LoginResponse toLoginResponse(UserProfileDto dto) {
         LoginResponse response = new LoginResponse(true);
-        response.setUser(toUserProfileResponse(dto, moderationCount));
+        response.setUser(toUserProfileResponse(dto));
         return response;
     }
 
-    private static UserProfileResponse toUserProfileResponse(UserProfileDto dto, long moderationCount) {
+    private static UserProfileResponse toUserProfileResponse(UserProfileDto dto) {
         UserProfileResponse response = new UserProfileResponse();
         response.setId(dto.getId());
         response.setName(dto.getName());
@@ -143,14 +143,14 @@ public class ResponseMapper {
         if (dto.isModerator()) {
             response.setModeration(true);
             response.setSettings(true);
+            response.setModerationCount(dto.getModerationCount());
         }
-        response.setModerationCount(moderationCount);
         return response;
     }
 
-    public static AuthCheckResponse toCheckResponse(UserProfileDto dto, long moderationCount) {
+    public static AuthCheckResponse toCheckResponse(UserProfileDto dto) {
         AuthCheckResponse response = new AuthCheckResponse(true);
-        response.setUser(toUserProfileResponse(dto, moderationCount));
+        response.setUser(toUserProfileResponse(dto));
         return response;
     }
 }

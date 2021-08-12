@@ -3,13 +3,13 @@ package ru.skillbox.blog.controller;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.blog.api.request.MyPostListStatus;
 import ru.skillbox.blog.api.request.ModeratorPostListStatus;
+import ru.skillbox.blog.api.request.MyPostListStatus;
 import ru.skillbox.blog.api.request.PostListMode;
 import ru.skillbox.blog.api.response.PostListResponse;
 import ru.skillbox.blog.api.response.PostResponse;
 import ru.skillbox.blog.dto.PostDto;
-import ru.skillbox.blog.dto.UserProfileDto;
+import ru.skillbox.blog.dto.UserDto;
 import ru.skillbox.blog.dto.mapper.ResponseMapper;
 import ru.skillbox.blog.exceptions.EntityNotFoundException;
 import ru.skillbox.blog.service.AuthService;
@@ -45,7 +45,7 @@ public class ApiPostController {
         Integer viewerId = null;
         boolean viewerIsModerator = false;
         if (principal != null) {
-            UserProfileDto user = authService.getUser(principal.getName());
+            UserDto user = authService.getUser(principal.getName());
             viewerId = user.getId();
             viewerIsModerator = user.isModerator();
         }

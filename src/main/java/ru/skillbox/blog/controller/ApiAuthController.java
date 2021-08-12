@@ -10,7 +10,6 @@ import ru.skillbox.blog.dto.UserProfileDto;
 import ru.skillbox.blog.dto.mapper.RequestMapper;
 import ru.skillbox.blog.dto.mapper.ResponseMapper;
 import ru.skillbox.blog.service.AuthService;
-import ru.skillbox.blog.service.PostService;
 
 import java.security.Principal;
 
@@ -19,19 +18,16 @@ import java.security.Principal;
 public class ApiAuthController {
 
     private final AuthService authService;
-    private final PostService postService;
 
-    public ApiAuthController(AuthService authService, PostService postService) {
+    public ApiAuthController(AuthService authService) {
         this.authService = authService;
-        this.postService = postService;
     }
 
     @GetMapping("check")
     public AuthCheckResponse check(Principal principal) {
         if (principal != null) {
-            UserProfileDto user = authService.getUser(principal.getName());
-            long moderationCount = user.isModerator() ? postService.countPostsForModeration() : 0;
-            return ResponseMapper.toCheckResponse(user, moderationCount);
+            UserProfileDto user = authService.getUserProfile(principal.getName());
+            return ResponseMapper.toCheckResponse(user);
         } else {
             return new AuthCheckResponse(false);
         }
@@ -53,8 +49,7 @@ public class ApiAuthController {
     public LoginResponse login(@RequestBody LoginRequest data) {
         try {
             UserProfileDto user = authService.authenticateUser(data.getEmail(), data.getPassword());
-            long moderationCount = user.isModerator() ? postService.countPostsForModeration() : 0;
-            return ResponseMapper.toLoginResponse(user, moderationCount);
+            return ResponseMapper.toLoginResponse(user);
         } catch (AuthenticationException e) {
             return new LoginResponse(false);
         }

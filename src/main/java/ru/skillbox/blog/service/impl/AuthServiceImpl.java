@@ -9,10 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.skillbox.blog.dto.CaptchaDto;
-import ru.skillbox.blog.dto.GeneratedCaptchaDto;
-import ru.skillbox.blog.dto.RegisterDto;
-import ru.skillbox.blog.dto.UserProfileDto;
+import ru.skillbox.blog.dto.*;
 import ru.skillbox.blog.dto.mapper.DtoMapper;
 import ru.skillbox.blog.dto.mapper.RegisterResponseDto;
 import ru.skillbox.blog.model.CaptchaCode;
@@ -21,6 +18,7 @@ import ru.skillbox.blog.repository.CaptchaCodeRepository;
 import ru.skillbox.blog.repository.UserRepository;
 import ru.skillbox.blog.service.AuthService;
 import ru.skillbox.blog.service.CaptchaGeneratorService;
+import ru.skillbox.blog.service.PostService;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -37,6 +35,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final PostService postService;
 
     public AuthServiceImpl(
             CaptchaCodeRepository captchaCodeRepository,
@@ -44,7 +43,8 @@ public class AuthServiceImpl implements AuthService {
             CaptchaGeneratorService captchaGeneratorService,
             UserRepository userRepository,
             AuthenticationManager authenticationManager,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            PostService postService
     ) {
         this.captchaCodeRepository = captchaCodeRepository;
         this.captchaExpiration = captchaExpiration == null || captchaExpiration.isEmpty() ? Duration.ofHours(1) :
@@ -53,6 +53,7 @@ public class AuthServiceImpl implements AuthService {
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
+        this.postService = postService;
     }
 
     @Transactional
@@ -123,13 +124,23 @@ public class AuthServiceImpl implements AuthService {
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, password));
         SecurityContextHolder.getContext().setAuthentication(authenticate);
-        return getUser(email);
+        return getUserProfile(email);
     }
 
     @Override
-    public UserProfileDto getUser(String email) {
-        User user = userRepository.getByEmailIgnoreCase(email).orElseThrow(() ->
+    public UserDto getUser(String email) {
+        return DtoMapper.toUserDto(getUserByEmail(email));
+    }
+
+    private User getUserByEmail(String email) {
+        return userRepository.getByEmailIgnoreCase(email).orElseThrow(() ->
                 new UsernameNotFoundException(String.format("Username %s not found", email)));
-        return DtoMapper.toUserProfileDto(user);
+    }
+
+    @Override
+    public UserProfileDto getUserProfile(String email) {
+        User user = getUserByEmail(email);
+        long moderationCount = user.isModerator() ? postService.countPostsForModeration() : 0;
+        return DtoMapper.toUserProfileDto(user, moderationCount);
     }
 }

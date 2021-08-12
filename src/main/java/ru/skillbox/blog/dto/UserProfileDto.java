@@ -7,6 +7,7 @@ public class UserProfileDto {
     private String photo;
     private String email;
     private boolean moderator;
+    private long moderationCount;
 
     public int getId() {
         return id;
@@ -46,5 +47,13 @@ public class UserProfileDto {
 
     public void setModerator(boolean moderator) {
         this.moderator = moderator;
+    }
+
+    public long getModerationCount() {
+        return moderationCount;
+    }
+
+    public void setModerationCount(long moderationCount) {
+        this.moderationCount = moderationCount;
     }
 }

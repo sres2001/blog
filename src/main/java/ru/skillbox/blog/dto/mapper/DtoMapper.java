@@ -34,6 +34,7 @@ public class DtoMapper {
         UserDto dto = new UserDto();
         dto.setId(user.getId());
         dto.setName(user.getName());
+        dto.setModerator(user.isModerator());
         return dto;
     }
 
@@ -89,13 +90,14 @@ public class DtoMapper {
         return dto;
     }
 
-    public static UserProfileDto toUserProfileDto(User user) {
+    public static UserProfileDto toUserProfileDto(User user, long moderationCount) {
         UserProfileDto dto = new UserProfileDto();
         dto.setId(user.getId());
         dto.setName(user.getName());
         dto.setPhoto(user.getPhoto());
         dto.setEmail(user.getEmail());
         dto.setModerator(user.isModerator());
+        dto.setModerationCount(moderationCount);
         return dto;
     }
 }
