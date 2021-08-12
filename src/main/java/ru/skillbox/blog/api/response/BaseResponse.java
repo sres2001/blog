@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Map;
 
-public class RegisterResponse {
+public class BaseResponse {
 
     private boolean result;
     @JsonInclude(JsonInclude.Include.NON_NULL)

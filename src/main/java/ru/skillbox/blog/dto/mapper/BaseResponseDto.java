@@ -2,7 +2,7 @@ package ru.skillbox.blog.dto.mapper;
 
 import java.util.Map;
 
-public class RegisterResponseDto {
+public class BaseResponseDto {
 
     private boolean result;
     private Map<String, String> errors;

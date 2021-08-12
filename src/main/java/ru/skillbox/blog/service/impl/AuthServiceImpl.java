@@ -10,8 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.blog.dto.*;
+import ru.skillbox.blog.dto.mapper.BaseResponseDto;
 import ru.skillbox.blog.dto.mapper.DtoMapper;
-import ru.skillbox.blog.dto.mapper.RegisterResponseDto;
 import ru.skillbox.blog.model.CaptchaCode;
 import ru.skillbox.blog.model.User;
 import ru.skillbox.blog.repository.CaptchaCodeRepository;
@@ -71,10 +71,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public RegisterResponseDto registerUser(RegisterDto registerDto) {
+    public BaseResponseDto registerUser(RegisterDto registerDto) {
         Map<String, String> errors = new HashMap<>();
         CaptchaCode captchaCode = validateRegistrationData(registerDto, errors);
-        RegisterResponseDto responseDto = new RegisterResponseDto();
+        BaseResponseDto responseDto = new BaseResponseDto();
         if (errors.isEmpty()) {
             User user = new User();
             user.setEmail(registerDto.getEmail());

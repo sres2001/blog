@@ -121,8 +121,8 @@ public class ResponseMapper {
         return response;
     }
 
-    public static RegisterResponse toRegisterResponse(RegisterResponseDto dto) {
-        RegisterResponse response = new RegisterResponse();
+    public static BaseResponse toBaseResponse(BaseResponseDto dto) {
+        BaseResponse response = new BaseResponse();
         response.setResult(dto.isResult());
         response.setErrors(dto.getErrors());
         return response;

@@ -3,13 +3,16 @@ package ru.skillbox.blog.controller;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import ru.skillbox.blog.api.request.AddPostRequest;
 import ru.skillbox.blog.api.request.ModeratorPostListStatus;
 import ru.skillbox.blog.api.request.MyPostListStatus;
 import ru.skillbox.blog.api.request.PostListMode;
+import ru.skillbox.blog.api.response.BaseResponse;
 import ru.skillbox.blog.api.response.PostListResponse;
 import ru.skillbox.blog.api.response.PostResponse;
 import ru.skillbox.blog.dto.PostDto;
 import ru.skillbox.blog.dto.UserDto;
+import ru.skillbox.blog.dto.mapper.RequestMapper;
 import ru.skillbox.blog.dto.mapper.ResponseMapper;
 import ru.skillbox.blog.exceptions.EntityNotFoundException;
 import ru.skillbox.blog.service.AuthService;
@@ -111,5 +114,12 @@ public class ApiPostController {
         int moderatorId = authService.getUser(principal.getName()).getId();
         return ResponseMapper.toPostListResponse(
                 postService.getModeratorPosts(moderatorId, offset, limit, status));
+    }
+
+    @PostMapping
+    @PreAuthorize("hasAuthority('post:write')")
+    public BaseResponse addPost(Principal principal, @RequestBody AddPostRequest request) {
+        UserDto user = authService.getUser(principal.getName());
+        return ResponseMapper.toBaseResponse(postService.addPost(RequestMapper.toAddPostDto(user.getId(), request)));
     }
 }

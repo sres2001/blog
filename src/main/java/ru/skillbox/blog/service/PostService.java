@@ -4,9 +4,11 @@ import org.springframework.data.domain.Page;
 import ru.skillbox.blog.api.request.MyPostListStatus;
 import ru.skillbox.blog.api.request.ModeratorPostListStatus;
 import ru.skillbox.blog.api.request.PostListMode;
+import ru.skillbox.blog.dto.AddPostRequestDto;
 import ru.skillbox.blog.dto.CalendarDto;
 import ru.skillbox.blog.dto.PostDto;
 import ru.skillbox.blog.dto.PostListItemDto;
+import ru.skillbox.blog.dto.mapper.BaseResponseDto;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -30,4 +32,6 @@ public interface PostService {
     long countPostsForModeration();
 
     Page<PostListItemDto> getModeratorPosts(int moderatorId, int offset, int limit, ModeratorPostListStatus status);
+
+    BaseResponseDto addPost(AddPostRequestDto requestDto);
 }

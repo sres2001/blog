@@ -9,22 +9,19 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.blog.api.request.ModeratorPostListStatus;
 import ru.skillbox.blog.api.request.MyPostListStatus;
 import ru.skillbox.blog.api.request.PostListMode;
+import ru.skillbox.blog.dto.AddPostRequestDto;
 import ru.skillbox.blog.dto.CalendarDto;
 import ru.skillbox.blog.dto.PostDto;
 import ru.skillbox.blog.dto.PostListItemDto;
+import ru.skillbox.blog.dto.mapper.BaseResponseDto;
 import ru.skillbox.blog.dto.mapper.DtoMapper;
-import ru.skillbox.blog.model.ModerationStatus;
-import ru.skillbox.blog.model.PostComment;
-import ru.skillbox.blog.model.PostListItem;
-import ru.skillbox.blog.model.Tag;
+import ru.skillbox.blog.model.*;
 import ru.skillbox.blog.repository.*;
 import ru.skillbox.blog.service.PostService;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,16 +31,22 @@ public class PostServiceImpl implements PostService {
     private final PostRepository entityRepository;
     private final TagRepository tagRepository;
     private final PostCommentRepository postCommentRepository;
+    private final UserRepository userRepository;
+    private final PostTagRepository postTagRepository;
 
     public PostServiceImpl(
             PostListItemRepository viewRepository,
             PostRepository entityRepository,
             TagRepository tagRepository,
-            PostCommentRepository postCommentRepository) {
+            PostCommentRepository postCommentRepository,
+            UserRepository userRepository,
+            PostTagRepository postTagRepository) {
         this.viewRepository = viewRepository;
         this.entityRepository = entityRepository;
         this.tagRepository = tagRepository;
         this.postCommentRepository = postCommentRepository;
+        this.userRepository = userRepository;
+        this.postTagRepository = postTagRepository;
     }
 
     @Override
@@ -193,5 +196,63 @@ public class PostServiceImpl implements PostService {
             default:
                 return ModerationStatus.ACCEPTED;
         }
+    }
+
+    @Transactional
+    @Override
+    public BaseResponseDto addPost(AddPostRequestDto requestDto) {
+        Map<String, String> errors = new HashMap<>();
+        validatePostData(requestDto, errors);
+        BaseResponseDto responseDto = new BaseResponseDto();
+        if (errors.isEmpty()) {
+            User user = userRepository.getOne(requestDto.getUserId());
+
+            Post post = new Post();
+            post.setActive(requestDto.getActive());
+            post.setModerationStatus(ModerationStatus.NEW);
+            post.setUser(user);
+            post.setTime(validateTime(requestDto.getTimestamp()));
+            post.setTitle(requestDto.getTitle());
+            post.setText(requestDto.getText());
+            post = entityRepository.save(post);
+
+            createTags(requestDto, post);
+
+            responseDto.setResult(true);
+        } else {
+            responseDto.setResult(false);
+            responseDto.setErrors(errors);
+        }
+        return responseDto;
+    }
+
+    private void createTags(AddPostRequestDto requestDto, Post post) {
+        if (requestDto.getTags() != null) {
+            for (String tagName : requestDto.getTags()) {
+                Tag tag = tagRepository.findOneByNameIgnoreCase(tagName)
+                        .orElseGet(() -> tagRepository.save(new Tag(tagName)));
+                PostTag postTag = new PostTag();
+                postTag.setPost(post);
+                postTag.setTag(tag);
+                postTagRepository.save(postTag);
+            }
+        }
+    }
+
+    private void validatePostData(AddPostRequestDto requestDto, Map<String, String> errors) {
+        if (requestDto.getTitle() == null) {
+            errors.put("title", "Заголовок не установлен");
+        } else if (requestDto.getTitle().trim().length() < 3) {
+            errors.put("title", "Заголовок слишком короткий");
+        }
+        if (requestDto.getText() == null) {
+            errors.put("title", "Текст публикации не установлен");
+        } else if (requestDto.getText().trim().length() < 50) {
+            errors.put("title", "Текст публикации слишком короткий");
+        }
+    }
+
+    private Date validateTime(long timestamp) {
+        return new Date(Math.max(timestamp, System.currentTimeMillis()));
     }
 }
