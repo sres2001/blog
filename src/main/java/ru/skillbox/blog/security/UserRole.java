@@ -5,12 +5,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Sergey Reshetnik<br/>
- * Date: 08.08.2021<br/>
- * Time: 11:00<br/>
- * Copyright 2021 Connective Games LLC. All rights reserved.
- */
 public enum UserRole {
     AUTHOR(Set.of(UserPermission.POST_WRITE)),
     MODERATOR(Set.of(UserPermission.POST_MODERATE)),
