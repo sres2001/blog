@@ -47,7 +47,8 @@ public class DtoMapper {
     }
 
     private static String toAnnounce(String html) {
-        String text = html.replaceAll("<.*?>", "");
+        String text = html.replaceAll("<.*?>", " ")
+                .replaceAll("\\s+", " ");
         if (text.length() > 150) {
             return text.substring(0, 147) + "...";
         }
