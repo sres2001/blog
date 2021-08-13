@@ -40,7 +40,7 @@ public class Post {
     private int viewCount;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "post_id", updatable = false)
     private Set<PostTag> tags;
 
     public int getId() {

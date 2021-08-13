@@ -298,7 +298,6 @@ public class PostServiceImpl implements PostService {
                 Function.identity()));
 
         Set<String> tagsToCreate = new HashSet<>(newTags.keySet());
-        postTagRepository.deleteAll(oldPostTags.values());
         tagsToCreate.removeAll(oldPostTags.keySet());
 
         oldPostTags.keySet().removeAll(newTags.keySet());
