@@ -10,6 +10,21 @@ public class BaseResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Map<String, String> errors;
 
+    public BaseResponse() {
+    }
+
+    public static BaseResponse success() {
+        return new BaseResponse(true);
+    }
+
+    private BaseResponse(boolean result) {
+        this.result = result;
+    }
+
+    public BaseResponse(Map<String, String> errors) {
+        this.errors = errors;
+    }
+
     public boolean isResult() {
         return result;
     }

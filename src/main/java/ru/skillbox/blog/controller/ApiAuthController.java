@@ -40,9 +40,8 @@ public class ApiAuthController {
 
     @PostMapping("register")
     public BaseResponse register(@RequestBody RegisterRequest data) {
-        return ResponseMapper.toBaseResponse(
-                authService.registerUser(
-                        RequestMapper.toRegisterDto(data)));
+        authService.registerUser(RequestMapper.toRegisterDto(data));
+        return BaseResponse.success();
     }
 
     @PostMapping("login")

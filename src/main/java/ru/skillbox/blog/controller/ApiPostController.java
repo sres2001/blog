@@ -120,14 +120,15 @@ public class ApiPostController {
     @PreAuthorize("hasAuthority('post:write')")
     public BaseResponse addPost(Principal principal, @RequestBody EditPostRequest request) {
         UserDto user = authService.getUser(principal.getName());
-        return ResponseMapper.toBaseResponse(postService.addPost(RequestMapper.toEditPostDto(user.getId(), request)));
+        postService.addPost(RequestMapper.toEditPostDto(user.getId(), request));
+        return BaseResponse.success();
     }
 
     @PutMapping("{id}")
     @PreAuthorize("hasAnyAuthority('post:write', 'post:moderate')")
     public BaseResponse editPost(Principal principal, @PathVariable int id, @RequestBody EditPostRequest request) {
         UserDto user = authService.getUser(principal.getName());
-        return ResponseMapper.toBaseResponse(
-                postService.editPost(id, RequestMapper.toEditPostDto(user.getId(), request)));
+        postService.editPost(id, RequestMapper.toEditPostDto(user.getId(), request));
+        return BaseResponse.success();
     }
 }

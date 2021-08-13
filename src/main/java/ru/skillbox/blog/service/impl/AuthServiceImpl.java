@@ -1,6 +1,7 @@
 package ru.skillbox.blog.service.impl;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -10,8 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.blog.dto.*;
-import ru.skillbox.blog.dto.mapper.BaseResponseDto;
 import ru.skillbox.blog.dto.mapper.DtoMapper;
+import ru.skillbox.blog.exceptions.ApiException;
 import ru.skillbox.blog.model.CaptchaCode;
 import ru.skillbox.blog.model.User;
 import ru.skillbox.blog.repository.CaptchaCodeRepository;
@@ -71,28 +72,20 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public BaseResponseDto registerUser(RegisterDto registerDto) {
-        Map<String, String> errors = new HashMap<>();
-        CaptchaCode captchaCode = validateRegistrationData(registerDto, errors);
-        BaseResponseDto responseDto = new BaseResponseDto();
-        if (errors.isEmpty()) {
-            User user = new User();
-            user.setEmail(registerDto.getEmail());
-            user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-            user.setName(registerDto.getName());
-            user.setRegistrationTime(new Date());
-            user.setRegistrationTime(new Date());
-            userRepository.save(user);
-            captchaCodeRepository.delete(captchaCode);
-            responseDto.setResult(true);
-        } else {
-            responseDto.setResult(false);
-            responseDto.setErrors(errors);
-        }
-        return responseDto;
+    public void registerUser(RegisterDto registerDto) {
+        CaptchaCode captchaCode = validateRegistrationData(registerDto);
+        User user = new User();
+        user.setEmail(registerDto.getEmail());
+        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+        user.setName(registerDto.getName());
+        user.setRegistrationTime(new Date());
+        user.setRegistrationTime(new Date());
+        userRepository.save(user);
+        captchaCodeRepository.delete(captchaCode);
     }
 
-    private CaptchaCode validateRegistrationData(RegisterDto registerDto, Map<String, String> errors) {
+    private CaptchaCode validateRegistrationData(RegisterDto registerDto) {
+        Map<String, String> errors = new HashMap<>();
         if (registerDto.getEmail() == null || !isEmail(registerDto.getEmail())) {
             errors.put("email", "e-mail указан неверно");
         } else if (userRepository.existsByEmailIgnoreCase(registerDto.getEmail())) {
@@ -107,6 +100,9 @@ public class AuthServiceImpl implements AuthService {
         CaptchaCode captchaCode = captchaCodeRepository.findBySecretCode(registerDto.getCaptchaSecret());
         if (captchaCode == null || !captchaCode.getCode().equals(registerDto.getCaptcha())) {
             errors.put("captcha", "Код с картинки введён неверно");
+        }
+        if (!errors.isEmpty()) {
+            throw new ApiException(HttpStatus.OK, errors);
         }
         return captchaCode;
     }

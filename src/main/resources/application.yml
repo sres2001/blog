@@ -9,6 +9,10 @@ spring.jpa:
   show-sql: false
   properties.hibernate.jdbc.time_zone: UTC
 
+spring.servlet.multipart:
+  max-file-size: 5MB
+  max-request-size: 5MB
+
 blog:
   title: DevPub
   subtitle: Рассказы разработчиков

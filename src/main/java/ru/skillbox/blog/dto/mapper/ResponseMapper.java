@@ -121,13 +121,6 @@ public class ResponseMapper {
         return response;
     }
 
-    public static BaseResponse toBaseResponse(BaseResponseDto dto) {
-        BaseResponse response = new BaseResponse();
-        response.setResult(dto.isResult());
-        response.setErrors(dto.getErrors());
-        return response;
-    }
-
     public static LoginResponse toLoginResponse(UserProfileDto dto) {
         LoginResponse response = new LoginResponse(true);
         response.setUser(toUserProfileResponse(dto));

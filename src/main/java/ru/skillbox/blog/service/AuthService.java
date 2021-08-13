@@ -4,13 +4,12 @@ import ru.skillbox.blog.dto.CaptchaDto;
 import ru.skillbox.blog.dto.RegisterDto;
 import ru.skillbox.blog.dto.UserDto;
 import ru.skillbox.blog.dto.UserProfileDto;
-import ru.skillbox.blog.dto.mapper.BaseResponseDto;
 
 public interface AuthService {
 
     CaptchaDto createCaptcha();
 
-    BaseResponseDto registerUser(RegisterDto registerDto);
+    void registerUser(RegisterDto registerDto);
 
     UserProfileDto authenticateUser(String email, String password);
 

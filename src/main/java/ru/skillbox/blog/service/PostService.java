@@ -1,14 +1,13 @@
 package ru.skillbox.blog.service;
 
 import org.springframework.data.domain.Page;
-import ru.skillbox.blog.api.request.MyPostListStatus;
 import ru.skillbox.blog.api.request.ModeratorPostListStatus;
+import ru.skillbox.blog.api.request.MyPostListStatus;
 import ru.skillbox.blog.api.request.PostListMode;
-import ru.skillbox.blog.dto.EditPostRequestDto;
 import ru.skillbox.blog.dto.CalendarDto;
+import ru.skillbox.blog.dto.EditPostRequestDto;
 import ru.skillbox.blog.dto.PostDto;
 import ru.skillbox.blog.dto.PostListItemDto;
-import ru.skillbox.blog.dto.mapper.BaseResponseDto;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -33,7 +32,7 @@ public interface PostService {
 
     Page<PostListItemDto> getModeratorPosts(int moderatorId, int offset, int limit, ModeratorPostListStatus status);
 
-    BaseResponseDto addPost(EditPostRequestDto requestDto);
+    void addPost(EditPostRequestDto requestDto);
 
-    BaseResponseDto editPost(int id, EditPostRequestDto requestDto);
+    void editPost(int id, EditPostRequestDto requestDto);
 }

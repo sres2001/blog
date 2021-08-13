@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,8 +15,8 @@ import ru.skillbox.blog.dto.CalendarDto;
 import ru.skillbox.blog.dto.EditPostRequestDto;
 import ru.skillbox.blog.dto.PostDto;
 import ru.skillbox.blog.dto.PostListItemDto;
-import ru.skillbox.blog.dto.mapper.BaseResponseDto;
 import ru.skillbox.blog.dto.mapper.DtoMapper;
+import ru.skillbox.blog.exceptions.ApiException;
 import ru.skillbox.blog.model.*;
 import ru.skillbox.blog.repository.*;
 import ru.skillbox.blog.service.GlobalSettingService;
@@ -206,63 +207,44 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public BaseResponseDto addPost(EditPostRequestDto requestDto) {
-        Map<String, String> errors = new HashMap<>();
-        validatePostData(requestDto, errors);
-        BaseResponseDto responseDto = new BaseResponseDto();
-        if (errors.isEmpty()) {
-            User user = userRepository.getOne(requestDto.getUserId());
-            ModerationStatus moderationStatus = user.isModerator() || !globalSettingService.isPostPremoderation() ?
-                    ModerationStatus.ACCEPTED : ModerationStatus.NEW;
+    public void addPost(EditPostRequestDto requestDto) {
+        validatePostData(requestDto);
+        User user = userRepository.getOne(requestDto.getUserId());
+        ModerationStatus moderationStatus = user.isModerator() || !globalSettingService.isPostPremoderation() ?
+                ModerationStatus.ACCEPTED : ModerationStatus.NEW;
 
-            Post post = new Post();
-            post.setActive(requestDto.getActive());
-            post.setModerationStatus(moderationStatus);
-            post.setUser(user);
-            post.setTime(validateTime(requestDto.getTimestamp()));
-            post.setTitle(requestDto.getTitle());
-            post.setText(requestDto.getText());
-            post = entityRepository.save(post);
+        Post post = new Post();
+        post.setActive(requestDto.getActive());
+        post.setModerationStatus(moderationStatus);
+        post.setUser(user);
+        post.setTime(validateTime(requestDto.getTimestamp()));
+        post.setTitle(requestDto.getTitle());
+        post.setText(requestDto.getText());
+        post = entityRepository.save(post);
 
-            createTags(requestDto, post);
-
-            responseDto.setResult(true);
-        } else {
-            responseDto.setResult(false);
-            responseDto.setErrors(errors);
-        }
-        return responseDto;
+        createTags(requestDto, post);
     }
 
     @Transactional
     @Override
-    public BaseResponseDto editPost(int id, EditPostRequestDto requestDto) {
+    public void editPost(int id, EditPostRequestDto requestDto) {
         Post post = entityRepository.getOne(id);
         User editor = userRepository.getOne(requestDto.getUserId());
         if (!editor.isModerator() && post.getUser().getId() != editor.getId()) {
             throw new AccessDeniedException(String.format("User %s cannot edit the post.", editor.getId()));
         }
-        Map<String, String> errors = new HashMap<>();
-        validatePostData(requestDto, errors);
-        BaseResponseDto responseDto = new BaseResponseDto();
-        if (errors.isEmpty()) {
-            ModerationStatus moderationStatus = editor.isModerator() || !globalSettingService.isPostPremoderation() ?
-                    ModerationStatus.ACCEPTED : ModerationStatus.NEW;
+        validatePostData(requestDto);
 
-            post.setActive(requestDto.getActive());
-            post.setModerationStatus(moderationStatus);
-            post.setTime(validateTime(requestDto.getTimestamp()));
-            post.setTitle(requestDto.getTitle());
-            post.setText(requestDto.getText());
-            recreateTags(requestDto, post);
-            entityRepository.save(post);
+        ModerationStatus moderationStatus = editor.isModerator() || !globalSettingService.isPostPremoderation() ?
+                ModerationStatus.ACCEPTED : ModerationStatus.NEW;
 
-            responseDto.setResult(true);
-        } else {
-            responseDto.setResult(false);
-            responseDto.setErrors(errors);
-        }
-        return responseDto;
+        post.setActive(requestDto.getActive());
+        post.setModerationStatus(moderationStatus);
+        post.setTime(validateTime(requestDto.getTimestamp()));
+        post.setTitle(requestDto.getTitle());
+        post.setText(requestDto.getText());
+        recreateTags(requestDto, post);
+        entityRepository.save(post);
     }
 
     private void createTags(EditPostRequestDto requestDto, Post post) {
@@ -309,7 +291,8 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    private void validatePostData(EditPostRequestDto requestDto, Map<String, String> errors) {
+    private void validatePostData(EditPostRequestDto requestDto) {
+        Map<String, String> errors = new HashMap<>();
         if (requestDto.getTitle() == null) {
             errors.put("title", "Заголовок не установлен");
         } else if (requestDto.getTitle().trim().length() < 3) {
@@ -319,6 +302,9 @@ public class PostServiceImpl implements PostService {
             errors.put("title", "Текст публикации не установлен");
         } else if (requestDto.getText().trim().length() < 50) {
             errors.put("title", "Текст публикации слишком короткий");
+        }
+        if (!errors.isEmpty()) {
+            throw new ApiException(HttpStatus.OK, errors);
         }
     }
 

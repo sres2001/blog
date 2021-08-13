@@ -1,9 +1,9 @@
 package ru.skillbox.blog.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ru.skillbox.blog.api.response.CalendarResponse;
 import ru.skillbox.blog.api.response.InitResponse;
 import ru.skillbox.blog.api.response.SettingsResponse;
@@ -11,10 +11,7 @@ import ru.skillbox.blog.api.response.TagListResponse;
 import ru.skillbox.blog.dto.CalendarDto;
 import ru.skillbox.blog.dto.TagDto;
 import ru.skillbox.blog.dto.mapper.ResponseMapper;
-import ru.skillbox.blog.service.BlogInformation;
-import ru.skillbox.blog.service.GlobalSettingService;
-import ru.skillbox.blog.service.PostService;
-import ru.skillbox.blog.service.TagService;
+import ru.skillbox.blog.service.*;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -31,17 +28,20 @@ public class ApiGeneralController {
     private final GlobalSettingService globalSettingsService;
     private final TagService tagService;
     private final PostService postService;
+    private final FileStorageService fileStorageService;
 
     public ApiGeneralController(
             BlogInformation blogInformation,
             GlobalSettingService globalSettingsService,
             TagService tagService,
-            PostService postService
+            PostService postService,
+            FileStorageService fileStorageService
     ) {
         this.initResponse = ResponseMapper.toInitResponse(blogInformation);
         this.globalSettingsService = globalSettingsService;
         this.tagService = tagService;
         this.postService = postService;
+        this.fileStorageService = fileStorageService;
     }
 
     @GetMapping("init")
@@ -69,5 +69,11 @@ public class ApiGeneralController {
         CalendarDto calendar = postService.getPostsCalendarByYear(Optional.ofNullable(year)
                 .orElse(LocalDate.now(ZoneOffset.UTC).getYear()));
         return ResponseMapper.toCalendarResponse(calendar);
+    }
+
+    @PostMapping("image")
+    @PreAuthorize("hasAnyAuthority('post:write', 'post:moderate')")
+    public ResponseEntity<?> saveImage(@RequestParam MultipartFile image) {
+        return ResponseEntity.ok(fileStorageService.saveImage(image));
     }
 }
