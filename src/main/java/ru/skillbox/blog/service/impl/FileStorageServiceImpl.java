@@ -3,6 +3,7 @@ package ru.skillbox.blog.service.impl;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skillbox.blog.exceptions.ApiException;
@@ -59,6 +60,13 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     @Override
     public Resource getImage(String filename) {
+        if (!isPathToUploadedImage(filename)) {
+            throw new AccessDeniedException(filename);
+        }
         return new FileSystemResource(Paths.get(filename.substring(1)).toFile());
+    }
+
+    private boolean isPathToUploadedImage(String filename) {
+        return filename.matches("^/upload/[a-f0-9/]+\\.(?:jpg|png)$");
     }
 }
