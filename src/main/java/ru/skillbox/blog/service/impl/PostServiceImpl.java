@@ -210,8 +210,8 @@ public class PostServiceImpl implements PostService {
     public void addPost(EditPostRequestDto requestDto) {
         validatePostData(requestDto);
         User user = userRepository.getOne(requestDto.getUserId());
-        ModerationStatus moderationStatus = user.isModerator() || !globalSettingService.isPostPremoderation() ?
-                ModerationStatus.ACCEPTED : ModerationStatus.NEW;
+        ModerationStatus moderationStatus = globalSettingService.isPostPremoderation() ?
+                ModerationStatus.NEW : ModerationStatus.ACCEPTED;
 
         Post post = new Post();
         post.setActive(requestDto.getActive());
@@ -235,8 +235,9 @@ public class PostServiceImpl implements PostService {
         }
         validatePostData(requestDto);
 
-        ModerationStatus moderationStatus = editor.isModerator() || !globalSettingService.isPostPremoderation() ?
-                ModerationStatus.ACCEPTED : ModerationStatus.NEW;
+        ModerationStatus moderationStatus = !editor.isModerator() ?
+                (globalSettingService.isPostPremoderation() ? ModerationStatus.NEW : ModerationStatus.ACCEPTED)
+                : post.getModerationStatus();
 
         post.setActive(requestDto.getActive());
         post.setModerationStatus(moderationStatus);
