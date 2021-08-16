@@ -22,7 +22,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({MaxUploadSizeExceededException.class})
     public ResponseEntity<?> handleMaxUploadSizeExceeded(MaxUploadSizeExceededException e, HttpServletRequest request) {
         if (request.getRequestURI().contains("profile")) {
-            return ResponseEntity.ok(new BaseResponse(
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse(
                     Map.of("photo", "Фото слишком большое, нужно не более 5 Мб")));
         }
         if (request.getRequestURI().contains("image")) {
