@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.skillbox.blog.api.request.ModerationDecision;
 import ru.skillbox.blog.api.request.ModeratorPostListStatus;
 import ru.skillbox.blog.api.request.MyPostListStatus;
 import ru.skillbox.blog.api.request.PostListMode;
@@ -337,5 +338,15 @@ public class PostServiceImpl implements PostService {
         postComment.setText(text);
         postComment = postCommentRepository.save(postComment);
         return postComment.getId();
+    }
+
+    @Override
+    public void moderatePost(int moderatorId, int postId, ModerationDecision decision) {
+        User moderator = userRepository.getOne(moderatorId);
+        Post post = entityRepository.findById(postId).orElseThrow(
+                () -> new ApiException(HttpStatus.BAD_REQUEST, Map.of("post_id", "Пост не существует")));
+        post.setModerationStatus(decision.getModerationStatus());
+        post.setModerator(moderator);
+        entityRepository.save(post);
     }
 }

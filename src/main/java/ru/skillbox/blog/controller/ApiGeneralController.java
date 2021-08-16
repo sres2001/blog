@@ -5,6 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skillbox.blog.api.request.CommentRequest;
+import ru.skillbox.blog.api.request.ModerationRequest;
 import ru.skillbox.blog.api.response.*;
 import ru.skillbox.blog.dto.CalendarDto;
 import ru.skillbox.blog.dto.TagDto;
@@ -85,5 +86,13 @@ public class ApiGeneralController {
         int userId = authService.getUser(principal.getName()).getId();
         int commentId = postService.addComment(userId, request.getPostId(), request.getParentId(), request.getText());
         return new IdResponse(commentId);
+    }
+
+    @PostMapping("moderation")
+    @PreAuthorize("hasAuthority('post:moderate')")
+    public BaseResponse moderation(Principal principal, @RequestBody ModerationRequest request) {
+        int moderatorId = authService.getUser(principal.getName()).getId();
+        postService.moderatePost(moderatorId, request.getPostId(), request.getDecision());
+        return BaseResponse.success();
     }
 }

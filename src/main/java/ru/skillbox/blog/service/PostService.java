@@ -1,6 +1,7 @@
 package ru.skillbox.blog.service;
 
 import org.springframework.data.domain.Page;
+import ru.skillbox.blog.api.request.ModerationDecision;
 import ru.skillbox.blog.api.request.ModeratorPostListStatus;
 import ru.skillbox.blog.api.request.MyPostListStatus;
 import ru.skillbox.blog.api.request.PostListMode;
@@ -37,4 +38,6 @@ public interface PostService {
     void editPost(int id, EditPostRequestDto requestDto);
 
     int addComment(int userId, int postId, Integer parentId, String text);
+
+    void moderatePost(int moderatorId, int postId, ModerationDecision decision);
 }
