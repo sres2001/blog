@@ -1,10 +1,14 @@
 package ru.skillbox.blog.api.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CommentResponse {
 
     private int id;
+    @JsonProperty("parent_id")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer parentId;
     @JsonProperty("timestamp")
     private long timestampAsEpochSeconds;
     private String text;
@@ -16,6 +20,14 @@ public class CommentResponse {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Integer getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
     }
 
     public long getTimestampAsEpochSeconds() {

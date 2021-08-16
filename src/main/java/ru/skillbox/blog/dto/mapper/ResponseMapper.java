@@ -100,6 +100,7 @@ public class ResponseMapper {
     private static CommentResponse toCommentResponse(CommentDto dto) {
         CommentResponse response = new CommentResponse();
         response.setId(dto.getId());
+        response.setParentId(dto.getParentId());
         response.setTimestampAsEpochSeconds(dto.getTimestampAsEpochSeconds());
         response.setText(dto.getText());
         response.setUser(toCommentAuthorResponse(dto.getUser()));

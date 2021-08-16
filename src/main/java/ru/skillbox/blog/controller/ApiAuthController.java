@@ -55,10 +55,10 @@ public class ApiAuthController {
     }
 
     @GetMapping("logout")
-    public LogoutResponse logout(Principal principal) {
+    public BaseResponse logout(Principal principal) {
         if (principal != null) {
             SecurityContextHolder.getContext().setAuthentication(null);
         }
-        return new LogoutResponse(true);
+        return BaseResponse.success();
     }
 }

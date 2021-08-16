@@ -78,6 +78,7 @@ public class DtoMapper {
     private static CommentDto toCommentDto(PostComment comment) {
         CommentDto dto = new CommentDto();
         dto.setId(comment.getId());
+        dto.setParentId(comment.getParent() != null ? comment.getParent().getId() : null);
         dto.setTimestampAsEpochSeconds(comment.getTime().toInstant().getEpochSecond());
         dto.setText(comment.getText());
         dto.setUser(toCommentAuthorDto(comment.getUser()));

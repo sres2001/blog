@@ -46,7 +46,8 @@ public class PostServiceImpl implements PostService {
             PostCommentRepository postCommentRepository,
             UserRepository userRepository,
             PostTagRepository postTagRepository,
-            GlobalSettingService globalSettingService) {
+            GlobalSettingService globalSettingService
+    ) {
         this.viewRepository = viewRepository;
         this.entityRepository = entityRepository;
         this.tagRepository = tagRepository;
@@ -74,7 +75,7 @@ public class PostServiceImpl implements PostService {
                 if (!specialViewer) {
                     entityRepository.incrementViewCount(postId);
                 }
-                List<PostComment> comments = postCommentRepository.findByPostId(postId);
+                List<PostComment> comments = postCommentRepository.findByPostIdOrderByTime(postId);
                 List<Tag> tags = tagRepository.findPostTags(postId);
                 return Optional.of(DtoMapper.toPostDto(post, postIsActive, comments, tags));
             }
@@ -154,7 +155,7 @@ public class PostServiceImpl implements PostService {
             return DtoMapper.toPostListDto(viewRepository.findByUserIdAndActive(userId, (byte) 0, pageable));
         }
         return DtoMapper.toPostListDto(
-                viewRepository.findByUserIdAndActiveAndModerationStatus(userId, (byte)1,
+                viewRepository.findByUserIdAndActiveAndModerationStatus(userId, (byte) 1,
                         getModerationStatusForQuery(status), pageable));
     }
 
@@ -172,7 +173,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public long countPostsForModeration() {
-        return entityRepository.countByActiveAndModerationStatus((byte)1, ModerationStatus.NEW);
+        return entityRepository.countByActiveAndModerationStatus((byte) 1, ModerationStatus.NEW);
     }
 
     @Override
@@ -311,5 +312,30 @@ public class PostServiceImpl implements PostService {
 
     private Date validateTime(long timestamp) {
         return new Date(Math.max(timestamp, System.currentTimeMillis()));
+    }
+
+    @Override
+    public int addComment(int userId, int postId, Integer parentId, String text) {
+        Post post = entityRepository.findById(postId).orElseThrow(
+                () -> new ApiException(HttpStatus.BAD_REQUEST, Map.of("post_id", "Пост не существует")));
+        PostComment parent = Optional.ofNullable(parentId)
+                .map(id -> postCommentRepository.findById(id).orElseThrow(
+                        () -> new ApiException(HttpStatus.BAD_REQUEST,
+                                Map.of("parent_id", "Комментарий не существует"))))
+                .orElse(null);
+        if (text == null || text.trim().length() < 3) {
+            throw new ApiException(HttpStatus.BAD_REQUEST,
+                    Map.of("text", "Текст комментария не задан или слишком короткий"));
+        }
+
+        User user = userRepository.getOne(userId);
+        PostComment postComment = new PostComment();
+        postComment.setParent(parent);
+        postComment.setPost(post);
+        postComment.setUser(user);
+        postComment.setTime(new Date());
+        postComment.setText(text);
+        postComment = postCommentRepository.save(postComment);
+        return postComment.getId();
     }
 }

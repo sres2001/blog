@@ -35,4 +35,6 @@ public interface PostService {
     void addPost(EditPostRequestDto requestDto);
 
     void editPost(int id, EditPostRequestDto requestDto);
+
+    int addComment(int userId, int postId, Integer parentId, String text);
 }

@@ -4,10 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skillbox.blog.api.response.CalendarResponse;
-import ru.skillbox.blog.api.response.InitResponse;
-import ru.skillbox.blog.api.response.SettingsResponse;
-import ru.skillbox.blog.api.response.TagListResponse;
+import ru.skillbox.blog.api.request.CommentRequest;
+import ru.skillbox.blog.api.response.*;
 import ru.skillbox.blog.dto.CalendarDto;
 import ru.skillbox.blog.dto.TagDto;
 import ru.skillbox.blog.dto.mapper.ResponseMapper;
@@ -15,6 +13,7 @@ import ru.skillbox.blog.service.*;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -29,19 +28,22 @@ public class ApiGeneralController {
     private final TagService tagService;
     private final PostService postService;
     private final FileStorageService fileStorageService;
+    private final AuthService authService;
 
     public ApiGeneralController(
             BlogInformation blogInformation,
             GlobalSettingService globalSettingsService,
             TagService tagService,
             PostService postService,
-            FileStorageService fileStorageService
+            FileStorageService fileStorageService,
+            AuthService authService
     ) {
         this.initResponse = ResponseMapper.toInitResponse(blogInformation);
         this.globalSettingsService = globalSettingsService;
         this.tagService = tagService;
         this.postService = postService;
         this.fileStorageService = fileStorageService;
+        this.authService = authService;
     }
 
     @GetMapping("init")
@@ -75,5 +77,13 @@ public class ApiGeneralController {
     @PreAuthorize("hasAnyAuthority('post:write', 'post:moderate')")
     public ResponseEntity<?> saveImage(@RequestParam MultipartFile image) {
         return ResponseEntity.ok(fileStorageService.saveImage(image));
+    }
+
+    @PostMapping("comment")
+    @PreAuthorize("hasAnyAuthority('post:write', 'post:moderate')")
+    public IdResponse comment(Principal principal, @RequestBody CommentRequest request) {
+        int userId = authService.getUser(principal.getName()).getId();
+        int commentId = postService.addComment(userId, request.getPostId(), request.getParentId(), request.getText());
+        return new IdResponse(commentId);
     }
 }

@@ -1,5 +1,6 @@
 package ru.skillbox.blog.exceptions;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,7 +26,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                     Map.of("photo", "Фото слишком большое, нужно не более 5 Мб")));
         }
         if (request.getRequestURI().contains("image")) {
-            return ResponseEntity.ok(new BaseResponse(
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse(
                     Map.of("image", "Размер файла превышает допустимый размер")));
         }
         return null;
