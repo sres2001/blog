@@ -1,14 +1,18 @@
 package ru.skillbox.blog.controller;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skillbox.blog.api.request.CommentRequest;
 import ru.skillbox.blog.api.request.ModerationRequest;
+import ru.skillbox.blog.api.request.UpdateProfileRequest;
+import ru.skillbox.blog.api.request.UpdateProfileWithPhotoRequest;
 import ru.skillbox.blog.api.response.*;
 import ru.skillbox.blog.dto.CalendarDto;
 import ru.skillbox.blog.dto.TagDto;
+import ru.skillbox.blog.dto.mapper.RequestMapper;
 import ru.skillbox.blog.dto.mapper.ResponseMapper;
 import ru.skillbox.blog.service.*;
 
@@ -77,7 +81,7 @@ public class ApiGeneralController {
     @PostMapping("image")
     @PreAuthorize("hasAnyAuthority('post:write', 'post:moderate')")
     public ResponseEntity<?> saveImage(@RequestParam MultipartFile image) {
-        return ResponseEntity.ok(fileStorageService.saveImage(image));
+        return ResponseEntity.ok(fileStorageService.saveUploadedImage(image));
     }
 
     @PostMapping("comment")
@@ -93,6 +97,27 @@ public class ApiGeneralController {
     public BaseResponse moderation(Principal principal, @RequestBody ModerationRequest request) {
         int moderatorId = authService.getUser(principal.getName()).getId();
         postService.moderatePost(moderatorId, request.getPostId(), request.getDecision());
+        return BaseResponse.success();
+    }
+
+    @PostMapping(value = "profile/my", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("isAuthenticated()")
+    public BaseResponse updateProfileFromMultipartFormData(
+            Principal principal,
+            @ModelAttribute UpdateProfileWithPhotoRequest request
+    ) {
+        return updateProfile(principal, request, request.getPhoto());
+    }
+
+    @PostMapping(value = "profile/my")
+    @PreAuthorize("isAuthenticated()")
+    public BaseResponse updateProfileFromJson(Principal principal, @RequestBody UpdateProfileRequest request) {
+        return updateProfile(principal, request, null);
+    }
+
+    private BaseResponse updateProfile(Principal principal, UpdateProfileRequest request, MultipartFile photo) {
+        int userId = authService.getUser(principal.getName()).getId();
+        authService.updateProfile(RequestMapper.toUpdateProfileDto(userId, request, photo));
         return BaseResponse.success();
     }
 }

@@ -5,7 +5,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface FileStorageService {
 
-    String saveImage(MultipartFile file);
+    String saveUploadedImage(MultipartFile file);
+
+    String saveAvatar(MultipartFile file);
 
     Resource getImage(String filename);
+
+    void deleteFile(String filename);
 }

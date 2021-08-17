@@ -19,6 +19,7 @@ import ru.skillbox.blog.repository.CaptchaCodeRepository;
 import ru.skillbox.blog.repository.UserRepository;
 import ru.skillbox.blog.service.AuthService;
 import ru.skillbox.blog.service.CaptchaGeneratorService;
+import ru.skillbox.blog.service.FileStorageService;
 import ru.skillbox.blog.service.PostService;
 
 import java.time.Duration;
@@ -37,6 +38,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final PostService postService;
+    private final FileStorageService fileStorageService;
 
     public AuthServiceImpl(
             CaptchaCodeRepository captchaCodeRepository,
@@ -45,7 +47,8 @@ public class AuthServiceImpl implements AuthService {
             UserRepository userRepository,
             AuthenticationManager authenticationManager,
             PasswordEncoder passwordEncoder,
-            PostService postService
+            PostService postService,
+            FileStorageService fileStorageService
     ) {
         this.captchaCodeRepository = captchaCodeRepository;
         this.captchaExpiration = captchaExpiration == null || captchaExpiration.isEmpty() ? Duration.ofHours(1) :
@@ -55,6 +58,7 @@ public class AuthServiceImpl implements AuthService {
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.postService = postService;
+        this.fileStorageService = fileStorageService;
     }
 
     @Transactional
@@ -138,5 +142,56 @@ public class AuthServiceImpl implements AuthService {
         User user = getUserByEmail(email);
         long moderationCount = user.isModerator() ? postService.countPostsForModeration() : 0;
         return DtoMapper.toUserProfileDto(user, moderationCount);
+    }
+
+    @Transactional
+    @Override
+    public void updateProfile(UpdateProfileDto dto) {
+        User user = userRepository.getOne(dto.getUserId());
+        validateProfile(dto, user);
+        user.setName(dto.getName());
+        boolean emailChanged = !dto.getEmail().equals(user.getEmail());
+        if (emailChanged) {
+            user.setEmail(dto.getEmail());
+        }
+        if (dto.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+        if (dto.getRemovePhoto() == 1) {
+            String oldPhoto = user.getPhoto();
+            user.setPhoto(null);
+            if (oldPhoto != null) {
+                fileStorageService.deleteFile(oldPhoto);
+            }
+        } else if (dto.getPhoto() != null) {
+            String photo = fileStorageService.saveAvatar(dto.getPhoto());
+            String oldPhoto = user.getPhoto();
+            user.setPhoto(photo);
+            if (oldPhoto != null) {
+                fileStorageService.deleteFile(oldPhoto);
+            }
+        }
+        userRepository.save(user);
+        //TODO(serger): relogin user if email or password changed
+    }
+
+    private void validateProfile(UpdateProfileDto dto, User user) {
+        Map<String, String> errors = new HashMap<>();
+        if (dto.getEmail() == null || !isEmail(dto.getEmail())) {
+            errors.put("email", "e-mail указан неверно");
+        } else if (!dto.getEmail().equalsIgnoreCase(user.getEmail())) {
+            if (userRepository.existsByEmailIgnoreCase(dto.getEmail())) {
+                errors.put("email", "Этот e-mail уже зарегистрирован");
+            }
+        }
+        if (dto.getName() == null || !isUserName(dto.getName())) {
+            errors.put("name", "Имя указано неверно");
+        }
+        if (dto.getPassword() != null && dto.getPassword().length() < 6) {
+            errors.put("password", "Пароль короче 6-ти символов");
+        }
+        if (!errors.isEmpty()) {
+            throw new ApiException(HttpStatus.OK, errors);
+        }
     }
 }

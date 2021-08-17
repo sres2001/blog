@@ -42,7 +42,7 @@ public class DefaultController implements ErrorController {
         return null;
     }
 
-    @GetMapping("/upload/**")
+    @GetMapping({"/upload/**", "/avatars/**"})
     public ResponseEntity<?> getImage(HttpServletRequest request) {
         Resource file = fileStorageService.getImage(request.getRequestURI());
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,

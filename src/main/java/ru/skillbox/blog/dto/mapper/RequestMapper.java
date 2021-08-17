@@ -1,9 +1,12 @@
 package ru.skillbox.blog.dto.mapper;
 
+import org.springframework.web.multipart.MultipartFile;
 import ru.skillbox.blog.api.request.EditPostRequest;
 import ru.skillbox.blog.api.request.RegisterRequest;
+import ru.skillbox.blog.api.request.UpdateProfileRequest;
 import ru.skillbox.blog.dto.EditPostRequestDto;
 import ru.skillbox.blog.dto.RegisterDto;
+import ru.skillbox.blog.dto.UpdateProfileDto;
 
 public class RequestMapper {
 
@@ -25,6 +28,17 @@ public class RequestMapper {
         dto.setTitle(request.getTitle());
         dto.setTags(request.getTags());
         dto.setText(request.getText());
+        return dto;
+    }
+
+    public static UpdateProfileDto toUpdateProfileDto(int userId, UpdateProfileRequest request, MultipartFile photo) {
+        UpdateProfileDto dto = new UpdateProfileDto();
+        dto.setUserId(userId);
+        dto.setName(request.getName());
+        dto.setEmail(request.getEmail());
+        dto.setPassword(request.getPassword());
+        dto.setRemovePhoto(request.getRemovePhoto());
+        dto.setPhoto(photo);
         return dto;
     }
 }

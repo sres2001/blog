@@ -22,13 +22,22 @@ import java.util.UUID;
 public class FileStorageServiceImpl implements FileStorageService {
 
     @Override
-    public String saveImage(MultipartFile multipartFile) {
+    public String saveUploadedImage(MultipartFile file) {
+        return saveImage("upload", file);
+    }
+
+    @Override
+    public String saveAvatar(MultipartFile file) {
+        return saveImage("avatars", file);
+    }
+
+    private String saveImage(String subFolder, MultipartFile multipartFile) {
         String imageExtension = getSupportedExtension(multipartFile.getContentType());
         if (imageExtension == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST,
                     Map.of("image", "Неподдерживаемый формат файла"));
         }
-        String relativePath = "upload/" + generateRandomPath() + "." + imageExtension;
+        String relativePath = subFolder + "/" + generateRandomPath() + "." + imageExtension;
         try {
             ReadableByteChannel readableByteChannel = Channels.newChannel(multipartFile.getInputStream());
             File file = Paths.get(relativePath).toFile();
@@ -67,6 +76,14 @@ public class FileStorageServiceImpl implements FileStorageService {
     }
 
     private boolean isPathToUploadedImage(String filename) {
-        return filename.matches("^/upload/[a-f0-9/]+\\.(?:jpg|png)$");
+        return filename.matches("^/(?:upload|avatars)/[a-f0-9/]+\\.(?:jpg|png)$");
+    }
+
+    @Override
+    public void deleteFile(String filename) {
+        if (!isPathToUploadedImage(filename)) {
+            throw new AccessDeniedException(filename);
+        }
+        Paths.get(filename.substring(1)).toFile().delete();
     }
 }
