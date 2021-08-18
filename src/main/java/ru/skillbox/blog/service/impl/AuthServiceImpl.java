@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -171,8 +172,16 @@ public class AuthServiceImpl implements AuthService {
                 fileStorageService.deleteFile(oldPhoto);
             }
         }
-        userRepository.save(user);
-        //TODO(serger): relogin user if email or password changed
+        user = userRepository.save(user);
+        if (emailChanged) {
+            SecurityContext context = SecurityContextHolder.getContext();
+            Authentication currentAuthentication = context.getAuthentication();
+            context.setAuthentication(
+                    new UsernamePasswordAuthenticationToken(
+                            user.getEmail(),
+                            "unknown password",
+                            currentAuthentication.getAuthorities()));
+        }
     }
 
     private void validateProfile(UpdateProfileDto dto, User user) {
