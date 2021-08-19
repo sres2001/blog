@@ -99,6 +99,12 @@
             <artifactId>checkstyle</artifactId>
             <version>${puppycrawl.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.imgscalr</groupId>
+            <artifactId>imgscalr-lib</artifactId>
+            <version>4.2</version>
+        </dependency>
     </dependencies>
 
     <build>
