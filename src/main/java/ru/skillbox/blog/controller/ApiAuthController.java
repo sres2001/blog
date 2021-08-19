@@ -5,11 +5,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.blog.api.request.LoginRequest;
 import ru.skillbox.blog.api.request.RegisterRequest;
-import ru.skillbox.blog.api.response.*;
+import ru.skillbox.blog.api.request.RestorePasswordRequest;
+import ru.skillbox.blog.api.response.AuthCheckResponse;
+import ru.skillbox.blog.api.response.BaseResponse;
+import ru.skillbox.blog.api.response.CaptchaResponse;
+import ru.skillbox.blog.api.response.LoginResponse;
 import ru.skillbox.blog.dto.UserProfileDto;
 import ru.skillbox.blog.dto.mapper.RequestMapper;
 import ru.skillbox.blog.dto.mapper.ResponseMapper;
 import ru.skillbox.blog.service.AuthService;
+import ru.skillbox.blog.service.MailService;
 
 import java.security.Principal;
 
@@ -18,9 +23,11 @@ import java.security.Principal;
 public class ApiAuthController {
 
     private final AuthService authService;
+    private final MailService mailService;
 
-    public ApiAuthController(AuthService authService) {
+    public ApiAuthController(AuthService authService, MailService mailService) {
         this.authService = authService;
+        this.mailService = mailService;
     }
 
     @GetMapping("check")
@@ -59,6 +66,13 @@ public class ApiAuthController {
         if (principal != null) {
             SecurityContextHolder.getContext().setAuthentication(null);
         }
+        return BaseResponse.success();
+    }
+
+    @PostMapping("restore")
+    public BaseResponse restore(@RequestBody RestorePasswordRequest request) {
+        String code = authService.restorePassword(request.getEmail());
+        mailService.sendPasswordRestoreEmail(request.getEmail(), code);
         return BaseResponse.success();
     }
 }

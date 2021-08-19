@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -202,5 +203,15 @@ public class AuthServiceImpl implements AuthService {
         if (!errors.isEmpty()) {
             throw new ApiException(HttpStatus.OK, errors);
         }
+    }
+
+    @Override
+    public String restorePassword(String email) {
+        User user = userRepository.getByEmailIgnoreCase(email)
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, null));
+        String hash = UUID.randomUUID().toString().replaceAll("-", "");
+        user.setCode(hash);
+        userRepository.save(user);
+        return hash;
     }
 }

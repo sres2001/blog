@@ -15,4 +15,6 @@ public interface AuthService {
     UserProfileDto getUserProfile(String email);
 
     void updateProfile(UpdateProfileDto toUpdateProfileDto);
+
+    String restorePassword(String email);
 }
