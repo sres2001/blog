@@ -6,7 +6,7 @@ public interface AuthService {
 
     CaptchaDto createCaptcha();
 
-    void registerUser(RegisterDto registerDto);
+    void registerUser(RegisterDto dto);
 
     UserProfileDto authenticateUser(String email, String password);
 
@@ -14,7 +14,9 @@ public interface AuthService {
 
     UserProfileDto getUserProfile(String email);
 
-    void updateProfile(UpdateProfileDto toUpdateProfileDto);
+    void updateProfile(UpdateProfileDto dto);
 
     String restorePassword(String email);
+
+    void changePassword(ChangePasswordDto dto);
 }

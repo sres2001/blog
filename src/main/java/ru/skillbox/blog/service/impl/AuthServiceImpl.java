@@ -28,7 +28,6 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -78,33 +77,32 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public void registerUser(RegisterDto registerDto) {
-        CaptchaCode captchaCode = validateRegistrationData(registerDto);
+    public void registerUser(RegisterDto dto) {
+        CaptchaCode captchaCode = validate(dto);
         User user = new User();
-        user.setEmail(registerDto.getEmail());
-        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        user.setName(registerDto.getName());
-        user.setRegistrationTime(new Date());
+        user.setEmail(dto.getEmail());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setName(dto.getName());
         user.setRegistrationTime(new Date());
         userRepository.save(user);
         captchaCodeRepository.delete(captchaCode);
     }
 
-    private CaptchaCode validateRegistrationData(RegisterDto registerDto) {
+    private CaptchaCode validate(RegisterDto dto) {
         Map<String, String> errors = new HashMap<>();
-        if (registerDto.getEmail() == null || !isEmail(registerDto.getEmail())) {
+        if (dto.getEmail() == null || !isEmail(dto.getEmail())) {
             errors.put("email", "e-mail указан неверно");
-        } else if (userRepository.existsByEmailIgnoreCase(registerDto.getEmail())) {
+        } else if (userRepository.existsByEmailIgnoreCase(dto.getEmail())) {
             errors.put("email", "Этот e-mail уже зарегистрирован");
         }
-        if (registerDto.getName() == null || !isUserName(registerDto.getName())) {
+        if (dto.getName() == null || !isUserName(dto.getName())) {
             errors.put("name", "Имя указано неверно");
         }
-        if (registerDto.getPassword() == null || registerDto.getPassword().length() < 6) {
+        if (dto.getPassword() == null || dto.getPassword().length() < 6) {
             errors.put("password", "Пароль короче 6-ти символов");
         }
-        CaptchaCode captchaCode = captchaCodeRepository.findBySecretCode(registerDto.getCaptchaSecret());
-        if (captchaCode == null || !captchaCode.getCode().equals(registerDto.getCaptcha())) {
+        CaptchaCode captchaCode = captchaCodeRepository.findBySecretCode(dto.getCaptchaSecret());
+        if (captchaCode == null || !captchaCode.getCode().equals(dto.getCaptcha())) {
             errors.put("captcha", "Код с картинки введён неверно");
         }
         if (!errors.isEmpty()) {
@@ -209,9 +207,38 @@ public class AuthServiceImpl implements AuthService {
     public String restorePassword(String email) {
         User user = userRepository.getByEmailIgnoreCase(email)
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, null));
-        String hash = UUID.randomUUID().toString().replaceAll("-", "");
+        String hash = RandomUtils.generatePasswordRestoreHash();
         user.setCode(hash);
         userRepository.save(user);
         return hash;
+    }
+
+    @Transactional
+    @Override
+    public void changePassword(ChangePasswordDto dto) {
+        User user = userRepository.getByCode(dto.getCode())
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, Map.of("code",
+                        "Ссылка для восстановления пароля устарела. " +
+                                "<a href=\"/login/restore-password\">Запросить ссылку снова</a>")));
+        CaptchaCode captchaCode = validate(dto);
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setCode(null);
+        userRepository.save(user);
+        captchaCodeRepository.delete(captchaCode);
+    }
+
+    private CaptchaCode validate(ChangePasswordDto dto) {
+        Map<String, String> errors = new HashMap<>();
+        if (dto.getPassword() == null || dto.getPassword().length() < 6) {
+            errors.put("password", "Пароль короче 6-ти символов");
+        }
+        CaptchaCode captchaCode = captchaCodeRepository.findBySecretCode(dto.getCaptchaSecret());
+        if (captchaCode == null || !captchaCode.getCode().equals(dto.getCaptcha())) {
+            errors.put("captcha", "Код с картинки введён неверно");
+        }
+        if (!errors.isEmpty()) {
+            throw new ApiException(HttpStatus.OK, errors);
+        }
+        return captchaCode;
     }
 }

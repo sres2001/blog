@@ -1,22 +1,24 @@
 package ru.skillbox.blog.dto.mapper;
 
 import org.springframework.web.multipart.MultipartFile;
+import ru.skillbox.blog.api.request.ChangePasswordRequest;
 import ru.skillbox.blog.api.request.EditPostRequest;
 import ru.skillbox.blog.api.request.RegisterRequest;
 import ru.skillbox.blog.api.request.UpdateProfileRequest;
+import ru.skillbox.blog.dto.ChangePasswordDto;
 import ru.skillbox.blog.dto.EditPostRequestDto;
 import ru.skillbox.blog.dto.RegisterDto;
 import ru.skillbox.blog.dto.UpdateProfileDto;
 
 public class RequestMapper {
 
-    public static RegisterDto toRegisterDto(RegisterRequest data) {
+    public static RegisterDto toRegisterDto(RegisterRequest request) {
         RegisterDto dto = new RegisterDto();
-        dto.setEmail(data.getEmail());
-        dto.setPassword(data.getPassword());
-        dto.setName(data.getName());
-        dto.setCaptcha(data.getCaptcha());
-        dto.setCaptchaSecret(data.getCaptchaSecret());
+        dto.setEmail(request.getEmail());
+        dto.setPassword(request.getPassword());
+        dto.setName(request.getName());
+        dto.setCaptcha(request.getCaptcha());
+        dto.setCaptchaSecret(request.getCaptchaSecret());
         return dto;
     }
 
@@ -39,6 +41,15 @@ public class RequestMapper {
         dto.setPassword(request.getPassword());
         dto.setRemovePhoto(request.getRemovePhoto());
         dto.setPhoto(photo);
+        return dto;
+    }
+
+    public static ChangePasswordDto toChangePasswordDto(ChangePasswordRequest request) {
+        ChangePasswordDto dto = new ChangePasswordDto();
+        dto.setCode(request.getCode());
+        dto.setPassword(request.getPassword());
+        dto.setCaptcha(request.getCaptcha());
+        dto.setCaptchaSecret(request.getCaptchaSecret());
         return dto;
     }
 }

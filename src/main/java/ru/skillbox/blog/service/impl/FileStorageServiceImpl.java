@@ -20,7 +20,6 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Paths;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
@@ -88,7 +87,7 @@ public class FileStorageServiceImpl implements FileStorageService {
     }
 
     private String generateRandomPath() {
-        String s = UUID.randomUUID().toString().replaceAll("-", "");
+        String s = RandomUtils.generateFilePath();
         return s.substring(0, 2) + '/' + s.substring(2, 4) + '/' + s.substring(4, 6) + '/' + s.substring(6);
     }
 

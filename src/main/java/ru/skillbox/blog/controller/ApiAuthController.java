@@ -3,6 +3,7 @@ package ru.skillbox.blog.controller;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import ru.skillbox.blog.api.request.ChangePasswordRequest;
 import ru.skillbox.blog.api.request.LoginRequest;
 import ru.skillbox.blog.api.request.RegisterRequest;
 import ru.skillbox.blog.api.request.RestorePasswordRequest;
@@ -46,15 +47,15 @@ public class ApiAuthController {
     }
 
     @PostMapping("register")
-    public BaseResponse register(@RequestBody RegisterRequest data) {
-        authService.registerUser(RequestMapper.toRegisterDto(data));
+    public BaseResponse register(@RequestBody RegisterRequest request) {
+        authService.registerUser(RequestMapper.toRegisterDto(request));
         return BaseResponse.success();
     }
 
     @PostMapping("login")
-    public LoginResponse login(@RequestBody LoginRequest data) {
+    public LoginResponse login(@RequestBody LoginRequest request) {
         try {
-            UserProfileDto user = authService.authenticateUser(data.getEmail(), data.getPassword());
+            UserProfileDto user = authService.authenticateUser(request.getEmail(), request.getPassword());
             return ResponseMapper.toLoginResponse(user);
         } catch (AuthenticationException e) {
             return new LoginResponse(false);
@@ -73,6 +74,12 @@ public class ApiAuthController {
     public BaseResponse restore(@RequestBody RestorePasswordRequest request) {
         String code = authService.restorePassword(request.getEmail());
         mailService.sendPasswordRestoreEmail(request.getEmail(), code);
+        return BaseResponse.success();
+    }
+
+    @PostMapping("password")
+    public BaseResponse password(@RequestBody ChangePasswordRequest request) {
+        authService.changePassword(RequestMapper.toChangePasswordDto(request));
         return BaseResponse.success();
     }
 }
