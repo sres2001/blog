@@ -55,4 +55,37 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     void incrementViewCount(int id);
 
     long countByActiveAndModerationStatus(byte active, ModerationStatus moderationStatus);
+
+    @Query(nativeQuery = true, value = "select count(*) as postsCount, " +
+            "   coalesce(sum(likes), 0) as likesCount," +
+            "   coalesce(sum(dislikes), 0) as dislikesCount," +
+            "   coalesce(sum(view_count), 0) as viewsCount," +
+            "   min(time) as firstPublication" +
+            " from posts left join\n" +
+            "(select post_id,\n" +
+            "        sum(case when value = 1 then 1 else 0 end) likes,\n" +
+            "        sum(case when value = -1 then 1 else 0 end) dislikes\n" +
+            "   from post_votes\n" +
+            "  group by post_id\n" +
+            ")\n" +
+            "vsub on posts.id = vsub.post_id\n" +
+            "where is_active = 1 and moderation_status = 'ACCEPTED' and time <= current_timestamp()" +
+            "  and user_id = :userId")
+    PostsStatistics getStatisticsByUser(int userId);
+
+    @Query(nativeQuery = true, value = "select count(*) as postsCount, " +
+            "   coalesce(sum(likes), 0) as likesCount," +
+            "   coalesce(sum(dislikes), 0) as dislikesCount," +
+            "   coalesce(sum(view_count), 0) as viewsCount," +
+            "   min(time) as firstPublication" +
+            " from posts left join\n" +
+            "(select post_id,\n" +
+            "        sum(case when value = 1 then 1 else 0 end) likes,\n" +
+            "        sum(case when value = -1 then 1 else 0 end) dislikes\n" +
+            "   from post_votes\n" +
+            "  group by post_id\n" +
+            ")\n" +
+            "vsub on posts.id = vsub.post_id\n" +
+            "where is_active = 1 and moderation_status = 'ACCEPTED' and time <= current_timestamp()")
+    PostsStatistics getAllStatistics();
 }

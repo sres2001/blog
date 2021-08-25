@@ -6,6 +6,7 @@ import ru.skillbox.blog.model.PostComment;
 import ru.skillbox.blog.model.PostListItem;
 import ru.skillbox.blog.model.Tag;
 import ru.skillbox.blog.model.User;
+import ru.skillbox.blog.repository.PostsStatistics;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -100,6 +101,18 @@ public class DtoMapper {
         dto.setEmail(user.getEmail());
         dto.setModerator(user.isModerator());
         dto.setModerationCount(moderationCount);
+        return dto;
+    }
+
+    public static StatisticsDto toStatisticsDto(PostsStatistics statistics) {
+        StatisticsDto dto = new StatisticsDto();
+        dto.setPostsCount(statistics.getPostsCount());
+        dto.setLikesCount(statistics.getLikesCount());
+        dto.setDislikesCount(statistics.getDislikesCount());
+        dto.setViewsCount(statistics.getViewsCount());
+        if (statistics.getFirstPublication() != null) {
+            dto.setFirstPublicationAsEpochSeconds(statistics.getFirstPublication().getEpochSecond());
+        }
         return dto;
     }
 }

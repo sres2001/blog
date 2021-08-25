@@ -6,4 +6,8 @@ public interface GlobalSettingService {
     default boolean isPostPremoderation() {
         return getBoolean("POST_PREMODERATION");
     }
+
+    default boolean isStatisticsPublic() {
+        return getBoolean("STATISTICS_IS_PUBLIC");
+    }
 }

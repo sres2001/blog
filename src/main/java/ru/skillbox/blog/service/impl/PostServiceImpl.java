@@ -12,10 +12,7 @@ import ru.skillbox.blog.api.request.ModerationDecision;
 import ru.skillbox.blog.api.request.ModeratorPostListStatus;
 import ru.skillbox.blog.api.request.MyPostListStatus;
 import ru.skillbox.blog.api.request.PostListMode;
-import ru.skillbox.blog.dto.CalendarDto;
-import ru.skillbox.blog.dto.EditPostRequestDto;
-import ru.skillbox.blog.dto.PostDto;
-import ru.skillbox.blog.dto.PostListItemDto;
+import ru.skillbox.blog.dto.*;
 import ru.skillbox.blog.dto.mapper.DtoMapper;
 import ru.skillbox.blog.exceptions.ApiException;
 import ru.skillbox.blog.model.*;
@@ -348,5 +345,17 @@ public class PostServiceImpl implements PostService {
         post.setModerationStatus(decision.getModerationStatus());
         post.setModerator(moderator);
         entityRepository.save(post);
+    }
+
+    @Override
+    public StatisticsDto getStatisticsByUser(int userId) {
+        return DtoMapper.toStatisticsDto(
+                entityRepository.getStatisticsByUser(userId));
+    }
+
+    @Override
+    public StatisticsDto getAllStatistics() {
+        return DtoMapper.toStatisticsDto(
+                entityRepository.getAllStatistics());
     }
 }

@@ -147,4 +147,14 @@ public class ResponseMapper {
         response.setUser(toUserProfileResponse(dto));
         return response;
     }
+
+    public static StatisticsResponse toStatisticsResponse(StatisticsDto dto) {
+        StatisticsResponse response = new StatisticsResponse();
+        response.setPostsCount(dto.getPostsCount());
+        response.setLikesCount(dto.getLikesCount());
+        response.setDislikesCount(dto.getDislikesCount());
+        response.setViewsCount(dto.getViewsCount());
+        response.setFirstPublicationAsEpochSeconds(dto.getFirstPublicationAsEpochSeconds());
+        return response;
+    }
 }

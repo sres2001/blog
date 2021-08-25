@@ -5,10 +5,7 @@ import ru.skillbox.blog.api.request.ModerationDecision;
 import ru.skillbox.blog.api.request.ModeratorPostListStatus;
 import ru.skillbox.blog.api.request.MyPostListStatus;
 import ru.skillbox.blog.api.request.PostListMode;
-import ru.skillbox.blog.dto.CalendarDto;
-import ru.skillbox.blog.dto.EditPostRequestDto;
-import ru.skillbox.blog.dto.PostDto;
-import ru.skillbox.blog.dto.PostListItemDto;
+import ru.skillbox.blog.dto.*;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -40,4 +37,8 @@ public interface PostService {
     int addComment(int userId, int postId, Integer parentId, String text);
 
     void moderatePost(int moderatorId, int postId, ModerationDecision decision);
+
+    StatisticsDto getStatisticsByUser(int userId);
+
+    StatisticsDto getAllStatistics();
 }

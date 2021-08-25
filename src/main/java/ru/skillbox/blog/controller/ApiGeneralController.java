@@ -2,6 +2,7 @@ package ru.skillbox.blog.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -60,8 +61,8 @@ public class ApiGeneralController {
     public SettingsResponse settings() {
         SettingsResponse response = new SettingsResponse();
         response.setMultiuserMode(globalSettingsService.getBoolean("MULTIUSER_MODE"));
-        response.setPostPremoderation(globalSettingsService.getBoolean("POST_PREMODERATION"));
-        response.setStatisticsIsPublic(globalSettingsService.getBoolean("STATISTICS_IS_PUBLIC"));
+        response.setPostPremoderation(globalSettingsService.isPostPremoderation());
+        response.setStatisticsIsPublic(globalSettingsService.isStatisticsPublic());
         return response;
     }
 
@@ -119,5 +120,22 @@ public class ApiGeneralController {
         int userId = authService.getUser(principal.getName()).getId();
         authService.updateProfile(RequestMapper.toUpdateProfileDto(userId, request, photo));
         return BaseResponse.success();
+    }
+
+    @GetMapping("statistics/my")
+    @PreAuthorize("hasAuthority('post:write')")
+    public StatisticsResponse myStatistics(Principal principal) {
+        int userId = authService.getUser(principal.getName()).getId();
+        return ResponseMapper.toStatisticsResponse(postService.getStatisticsByUser(userId));
+    }
+
+    @GetMapping("statistics/all")
+    public StatisticsResponse allStatistics(Principal principal) {
+        if (!globalSettingsService.isStatisticsPublic()) {
+            if (principal == null || !authService.getUser(principal.getName()).isModerator()) {
+                throw new AccessDeniedException("Статистика доступна только модераторам.");
+            }
+        }
+        return ResponseMapper.toStatisticsResponse(postService.getAllStatistics());
     }
 }
