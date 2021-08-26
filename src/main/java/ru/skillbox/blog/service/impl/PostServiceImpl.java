@@ -36,6 +36,7 @@ public class PostServiceImpl implements PostService {
     private final UserRepository userRepository;
     private final PostTagRepository postTagRepository;
     private final GlobalSettingService globalSettingService;
+    private final PostVoteRepository postVoteRepository;
 
     public PostServiceImpl(
             PostListItemRepository viewRepository,
@@ -44,7 +45,8 @@ public class PostServiceImpl implements PostService {
             PostCommentRepository postCommentRepository,
             UserRepository userRepository,
             PostTagRepository postTagRepository,
-            GlobalSettingService globalSettingService
+            GlobalSettingService globalSettingService,
+            PostVoteRepository postVoteRepository
     ) {
         this.viewRepository = viewRepository;
         this.entityRepository = entityRepository;
@@ -53,6 +55,7 @@ public class PostServiceImpl implements PostService {
         this.userRepository = userRepository;
         this.postTagRepository = postTagRepository;
         this.globalSettingService = globalSettingService;
+        this.postVoteRepository = postVoteRepository;
     }
 
     @Override
@@ -357,5 +360,41 @@ public class PostServiceImpl implements PostService {
     public StatisticsDto getAllStatistics() {
         return DtoMapper.toStatisticsDto(
                 entityRepository.getAllStatistics());
+    }
+
+    @Transactional
+    @Override
+    public boolean setLike(int userId, int postId) {
+        return setLike(userId, postId, (byte)1);
+    }
+
+    @Transactional
+    @Override
+    public boolean setDislike(int userId, int postId) {
+        return setLike(userId, postId, (byte)-1);
+    }
+
+    private Boolean setLike(int userId, int postId, byte newValue) {
+        User user = userRepository.getOne(userId);
+        Post post = entityRepository.getOne(postId);
+        return postVoteRepository.findByUserAndPost(user, post)
+                .map(postVote -> {
+                    if (postVote.getValue() != newValue) {
+                        postVote.setValue(newValue);
+                        postVote.setTime(new Date());
+                        postVoteRepository.save(postVote);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }).orElseGet(() -> {
+                    PostVote postVote = new PostVote();
+                    postVote.setUser(user);
+                    postVote.setPost(post);
+                    postVote.setValue(newValue);
+                    postVote.setTime(new Date());
+                    postVoteRepository.save(postVote);
+                    return true;
+                });
     }
 }

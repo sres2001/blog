@@ -17,7 +17,7 @@ public class BaseResponse {
         return new BaseResponse(true);
     }
 
-    private BaseResponse(boolean result) {
+    public BaseResponse(boolean result) {
         this.result = result;
     }
 

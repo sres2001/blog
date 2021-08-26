@@ -41,4 +41,8 @@ public interface PostService {
     StatisticsDto getStatisticsByUser(int userId);
 
     StatisticsDto getAllStatistics();
+
+    boolean setLike(int userId, int postId);
+
+    boolean setDislike(int userId, int postId);
 }

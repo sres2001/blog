@@ -3,10 +3,7 @@ package ru.skillbox.blog.controller;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.blog.api.request.EditPostRequest;
-import ru.skillbox.blog.api.request.ModeratorPostListStatus;
-import ru.skillbox.blog.api.request.MyPostListStatus;
-import ru.skillbox.blog.api.request.PostListMode;
+import ru.skillbox.blog.api.request.*;
 import ru.skillbox.blog.api.response.BaseResponse;
 import ru.skillbox.blog.api.response.PostListResponse;
 import ru.skillbox.blog.api.response.PostResponse;
@@ -130,5 +127,21 @@ public class ApiPostController {
         UserDto user = authService.getUser(principal.getName());
         postService.editPost(id, RequestMapper.toEditPostDto(user.getId(), request));
         return BaseResponse.success();
+    }
+
+    @PostMapping("like")
+    @PreAuthorize("isAuthenticated()")
+    public BaseResponse like(Principal principal, @RequestBody LikeRequest request) {
+        UserDto user = authService.getUser(principal.getName());
+        boolean set = postService.setLike(user.getId(), request.getPostId());
+        return new BaseResponse(set);
+    }
+
+    @PostMapping("dislike")
+    @PreAuthorize("isAuthenticated()")
+    public BaseResponse dislike(Principal principal, @RequestBody LikeRequest request) {
+        UserDto user = authService.getUser(principal.getName());
+        boolean set = postService.setDislike(user.getId(), request.getPostId());
+        return new BaseResponse(set);
     }
 }
