@@ -12,6 +12,7 @@ import ru.skillbox.blog.api.request.UpdateProfileRequest;
 import ru.skillbox.blog.api.request.UpdateProfileWithPhotoRequest;
 import ru.skillbox.blog.api.response.*;
 import ru.skillbox.blog.dto.CalendarDto;
+import ru.skillbox.blog.dto.SettingsDto;
 import ru.skillbox.blog.dto.TagDto;
 import ru.skillbox.blog.dto.mapper.RequestMapper;
 import ru.skillbox.blog.dto.mapper.ResponseMapper;
@@ -59,11 +60,14 @@ public class ApiGeneralController {
 
     @GetMapping("settings")
     public SettingsResponse settings() {
-        SettingsResponse response = new SettingsResponse();
-        response.setMultiuserMode(globalSettingsService.getBoolean("MULTIUSER_MODE"));
-        response.setPostPremoderation(globalSettingsService.isPostPremoderation());
-        response.setStatisticsIsPublic(globalSettingsService.isStatisticsPublic());
-        return response;
+        return ResponseMapper.toSettingsResponse(globalSettingsService.getSettings());
+    }
+
+    @PutMapping("settings")
+    @PreAuthorize("hasAuthority('settings:write')")
+    public void putSettings(Principal principal, @RequestBody SettingsResponse request) {
+        SettingsDto dto = RequestMapper.toSettingsDto(request);
+        globalSettingsService.updateSettings(dto);
     }
 
     @GetMapping("tag")

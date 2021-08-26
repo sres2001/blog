@@ -5,10 +5,8 @@ import ru.skillbox.blog.api.request.ChangePasswordRequest;
 import ru.skillbox.blog.api.request.EditPostRequest;
 import ru.skillbox.blog.api.request.RegisterRequest;
 import ru.skillbox.blog.api.request.UpdateProfileRequest;
-import ru.skillbox.blog.dto.ChangePasswordDto;
-import ru.skillbox.blog.dto.EditPostRequestDto;
-import ru.skillbox.blog.dto.RegisterDto;
-import ru.skillbox.blog.dto.UpdateProfileDto;
+import ru.skillbox.blog.api.response.SettingsResponse;
+import ru.skillbox.blog.dto.*;
 
 public class RequestMapper {
 
@@ -50,6 +48,14 @@ public class RequestMapper {
         dto.setPassword(request.getPassword());
         dto.setCaptcha(request.getCaptcha());
         dto.setCaptchaSecret(request.getCaptchaSecret());
+        return dto;
+    }
+
+    public static SettingsDto toSettingsDto(SettingsResponse request) {
+        SettingsDto dto = new SettingsDto();
+        dto.setMultiuserMode(request.isMultiuserMode());
+        dto.setPostPremoderation(request.isPostPremoderation());
+        dto.setStatisticsIsPublic(request.isStatisticsIsPublic());
         return dto;
     }
 }

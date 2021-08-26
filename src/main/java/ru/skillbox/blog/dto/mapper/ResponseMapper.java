@@ -157,4 +157,12 @@ public class ResponseMapper {
         response.setFirstPublicationAsEpochSeconds(dto.getFirstPublicationAsEpochSeconds());
         return response;
     }
+
+    public static SettingsResponse toSettingsResponse(SettingsDto dto) {
+        SettingsResponse response = new SettingsResponse();
+        response.setMultiuserMode(dto.isMultiuserMode());
+        response.setPostPremoderation(dto.isPostPremoderation());
+        response.setStatisticsIsPublic(dto.isStatisticsIsPublic());
+        return response;
+    }
 }
