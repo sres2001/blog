@@ -1,5 +1,6 @@
 package ru.skillbox.blog.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,9 @@ import ru.skillbox.blog.api.response.LoginResponse;
 import ru.skillbox.blog.dto.UserProfileDto;
 import ru.skillbox.blog.dto.mapper.RequestMapper;
 import ru.skillbox.blog.dto.mapper.ResponseMapper;
+import ru.skillbox.blog.exceptions.ApiException;
 import ru.skillbox.blog.service.AuthService;
+import ru.skillbox.blog.service.GlobalSettingService;
 import ru.skillbox.blog.service.MailService;
 
 import java.security.Principal;
@@ -25,10 +28,16 @@ public class ApiAuthController {
 
     private final AuthService authService;
     private final MailService mailService;
+    private final GlobalSettingService globalSettingService;
 
-    public ApiAuthController(AuthService authService, MailService mailService) {
+    public ApiAuthController(
+            AuthService authService,
+            MailService mailService,
+            GlobalSettingService globalSettingService
+    ) {
         this.authService = authService;
         this.mailService = mailService;
+        this.globalSettingService = globalSettingService;
     }
 
     @GetMapping("check")
@@ -48,6 +57,9 @@ public class ApiAuthController {
 
     @PostMapping("register")
     public BaseResponse register(@RequestBody RegisterRequest request) {
+        if (!globalSettingService.isMultiuserMode()) {
+            throw new ApiException(HttpStatus.NOT_FOUND, null);
+        }
         authService.registerUser(RequestMapper.toRegisterDto(request));
         return BaseResponse.success();
     }
