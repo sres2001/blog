@@ -40,6 +40,10 @@ public class PostListItem {
             columnDefinition = "enum('NEW', 'ACCEPTED', 'DECLINED')")
     private ModerationStatus moderationStatus;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "moderator_id")
+    private User moderator;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
     private User user;
@@ -87,6 +91,14 @@ public class PostListItem {
 
     public void setModerationStatus(ModerationStatus moderationStatus) {
         this.moderationStatus = moderationStatus;
+    }
+
+    public User getModerator() {
+        return moderator;
+    }
+
+    public void setModerator(User moderator) {
+        this.moderator = moderator;
     }
 
     public User getUser() {

@@ -1,23 +1,26 @@
 package ru.skillbox.blog.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import ru.skillbox.blog.api.response.CalendarResponse;
-import ru.skillbox.blog.api.response.InitResponse;
-import ru.skillbox.blog.api.response.SettingsResponse;
-import ru.skillbox.blog.api.response.TagListResponse;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import ru.skillbox.blog.api.request.CommentRequest;
+import ru.skillbox.blog.api.request.ModerationRequest;
+import ru.skillbox.blog.api.request.UpdateProfileRequest;
+import ru.skillbox.blog.api.request.UpdateProfileWithPhotoRequest;
+import ru.skillbox.blog.api.response.*;
 import ru.skillbox.blog.dto.CalendarDto;
+import ru.skillbox.blog.dto.SettingsDto;
 import ru.skillbox.blog.dto.TagDto;
+import ru.skillbox.blog.dto.mapper.RequestMapper;
 import ru.skillbox.blog.dto.mapper.ResponseMapper;
-import ru.skillbox.blog.service.BlogInformation;
-import ru.skillbox.blog.service.GlobalSettingService;
-import ru.skillbox.blog.service.PostService;
-import ru.skillbox.blog.service.TagService;
+import ru.skillbox.blog.service.*;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -31,17 +34,23 @@ public class ApiGeneralController {
     private final GlobalSettingService globalSettingsService;
     private final TagService tagService;
     private final PostService postService;
+    private final FileStorageService fileStorageService;
+    private final AuthService authService;
 
     public ApiGeneralController(
             BlogInformation blogInformation,
             GlobalSettingService globalSettingsService,
             TagService tagService,
-            PostService postService
+            PostService postService,
+            FileStorageService fileStorageService,
+            AuthService authService
     ) {
         this.initResponse = ResponseMapper.toInitResponse(blogInformation);
         this.globalSettingsService = globalSettingsService;
         this.tagService = tagService;
         this.postService = postService;
+        this.fileStorageService = fileStorageService;
+        this.authService = authService;
     }
 
     @GetMapping("init")
@@ -51,11 +60,14 @@ public class ApiGeneralController {
 
     @GetMapping("settings")
     public SettingsResponse settings() {
-        SettingsResponse response = new SettingsResponse();
-        response.setMultiuserMode(globalSettingsService.getBoolean("MULTIUSER_MODE"));
-        response.setPostPremoderation(globalSettingsService.getBoolean("POST_PREMODERATION"));
-        response.setStatisticsIsPublic(globalSettingsService.getBoolean("STATISTICS_IS_PUBLIC"));
-        return response;
+        return ResponseMapper.toSettingsResponse(globalSettingsService.getSettings());
+    }
+
+    @PutMapping("settings")
+    @PreAuthorize("hasAuthority('settings:write')")
+    public void putSettings(Principal principal, @RequestBody SettingsResponse request) {
+        SettingsDto dto = RequestMapper.toSettingsDto(request);
+        globalSettingsService.updateSettings(dto);
     }
 
     @GetMapping("tag")
@@ -69,5 +81,65 @@ public class ApiGeneralController {
         CalendarDto calendar = postService.getPostsCalendarByYear(Optional.ofNullable(year)
                 .orElse(LocalDate.now(ZoneOffset.UTC).getYear()));
         return ResponseMapper.toCalendarResponse(calendar);
+    }
+
+    @PostMapping("image")
+    @PreAuthorize("hasAnyAuthority('post:write', 'post:moderate')")
+    public ResponseEntity<?> saveImage(@RequestParam MultipartFile image) {
+        return ResponseEntity.ok(fileStorageService.saveUploadedImage(image));
+    }
+
+    @PostMapping("comment")
+    @PreAuthorize("hasAnyAuthority('post:write', 'post:moderate')")
+    public IdResponse comment(Principal principal, @RequestBody CommentRequest request) {
+        int userId = authService.getUser(principal.getName()).getId();
+        int commentId = postService.addComment(userId, request.getPostId(), request.getParentId(), request.getText());
+        return new IdResponse(commentId);
+    }
+
+    @PostMapping("moderation")
+    @PreAuthorize("hasAuthority('post:moderate')")
+    public BaseResponse moderation(Principal principal, @RequestBody ModerationRequest request) {
+        int moderatorId = authService.getUser(principal.getName()).getId();
+        postService.moderatePost(moderatorId, request.getPostId(), request.getDecision());
+        return BaseResponse.success();
+    }
+
+    @PostMapping(value = "profile/my", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("isAuthenticated()")
+    public BaseResponse updateProfileFromMultipartFormData(
+            Principal principal,
+            @ModelAttribute UpdateProfileWithPhotoRequest request
+    ) {
+        return updateProfile(principal, request, request.getPhoto());
+    }
+
+    @PostMapping(value = "profile/my")
+    @PreAuthorize("isAuthenticated()")
+    public BaseResponse updateProfileFromJson(Principal principal, @RequestBody UpdateProfileRequest request) {
+        return updateProfile(principal, request, null);
+    }
+
+    private BaseResponse updateProfile(Principal principal, UpdateProfileRequest request, MultipartFile photo) {
+        int userId = authService.getUser(principal.getName()).getId();
+        authService.updateProfile(RequestMapper.toUpdateProfileDto(userId, request, photo));
+        return BaseResponse.success();
+    }
+
+    @GetMapping("statistics/my")
+    @PreAuthorize("hasAuthority('post:write')")
+    public StatisticsResponse myStatistics(Principal principal) {
+        int userId = authService.getUser(principal.getName()).getId();
+        return ResponseMapper.toStatisticsResponse(postService.getStatisticsByUser(userId));
+    }
+
+    @GetMapping("statistics/all")
+    public StatisticsResponse allStatistics(Principal principal) {
+        if (!globalSettingsService.isStatisticsPublic()) {
+            if (principal == null || !authService.getUser(principal.getName()).isModerator()) {
+                throw new AccessDeniedException("Статистика доступна только модераторам.");
+            }
+        }
+        return ResponseMapper.toStatisticsResponse(postService.getAllStatistics());
     }
 }

@@ -2,16 +2,14 @@ package ru.skillbox.blog.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import ru.skillbox.blog.model.Post;
+import ru.skillbox.blog.model.PostVote;
 import ru.skillbox.blog.model.User;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface PostVoteRepository extends JpaRepository<PostVote, Integer> {
 
-    boolean existsByEmailIgnoreCase(String email);
-
-    Optional<User> getByEmailIgnoreCase(String email);
-
-    Optional<User> getByCode(String code);
+    Optional<PostVote> findByUserAndPost(User user, Post post);
 }

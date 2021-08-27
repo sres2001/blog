@@ -15,7 +15,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.UUID;
 
 @Service
 public class PatchcaLibraryCaptchaGeneratorService implements CaptchaGeneratorService {
@@ -52,7 +51,7 @@ public class PatchcaLibraryCaptchaGeneratorService implements CaptchaGeneratorSe
             throw new RuntimeException("Cannot generate captcha", e);
         }
         GeneratedCaptchaDto dto = new GeneratedCaptchaDto();
-        dto.setId(UUID.randomUUID().toString());
+        dto.setId(RandomUtils.generateCaptchaSecret());
         dto.setCode(captcha.getChallenge());
         dto.setPngImage(baos.toByteArray());
         return dto;

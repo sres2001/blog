@@ -100,6 +100,7 @@ public class ResponseMapper {
     private static CommentResponse toCommentResponse(CommentDto dto) {
         CommentResponse response = new CommentResponse();
         response.setId(dto.getId());
+        response.setParentId(dto.getParentId());
         response.setTimestampAsEpochSeconds(dto.getTimestampAsEpochSeconds());
         response.setText(dto.getText());
         response.setUser(toCommentAuthorResponse(dto.getUser()));
@@ -121,20 +122,13 @@ public class ResponseMapper {
         return response;
     }
 
-    public static RegisterResponse toRegisterResponse(RegisterResponseDto dto) {
-        RegisterResponse response = new RegisterResponse();
-        response.setResult(dto.isResult());
-        response.setErrors(dto.getErrors());
-        return response;
-    }
-
-    public static LoginResponse toLoginResponse(UserProfileDto dto, long moderationCount) {
+    public static LoginResponse toLoginResponse(UserProfileDto dto) {
         LoginResponse response = new LoginResponse(true);
-        response.setUser(toUserProfileResponse(dto, moderationCount));
+        response.setUser(toUserProfileResponse(dto));
         return response;
     }
 
-    private static UserProfileResponse toUserProfileResponse(UserProfileDto dto, long moderationCount) {
+    private static UserProfileResponse toUserProfileResponse(UserProfileDto dto) {
         UserProfileResponse response = new UserProfileResponse();
         response.setId(dto.getId());
         response.setName(dto.getName());
@@ -143,14 +137,32 @@ public class ResponseMapper {
         if (dto.isModerator()) {
             response.setModeration(true);
             response.setSettings(true);
+            response.setModerationCount(dto.getModerationCount());
         }
-        response.setModerationCount(moderationCount);
         return response;
     }
 
-    public static AuthCheckResponse toCheckResponse(UserProfileDto dto, long moderationCount) {
+    public static AuthCheckResponse toCheckResponse(UserProfileDto dto) {
         AuthCheckResponse response = new AuthCheckResponse(true);
-        response.setUser(toUserProfileResponse(dto, moderationCount));
+        response.setUser(toUserProfileResponse(dto));
+        return response;
+    }
+
+    public static StatisticsResponse toStatisticsResponse(StatisticsDto dto) {
+        StatisticsResponse response = new StatisticsResponse();
+        response.setPostsCount(dto.getPostsCount());
+        response.setLikesCount(dto.getLikesCount());
+        response.setDislikesCount(dto.getDislikesCount());
+        response.setViewsCount(dto.getViewsCount());
+        response.setFirstPublicationAsEpochSeconds(dto.getFirstPublicationAsEpochSeconds());
+        return response;
+    }
+
+    public static SettingsResponse toSettingsResponse(SettingsDto dto) {
+        SettingsResponse response = new SettingsResponse();
+        response.setMultiuserMode(dto.isMultiuserMode());
+        response.setPostPremoderation(dto.isPostPremoderation());
+        response.setStatisticsIsPublic(dto.isStatisticsIsPublic());
         return response;
     }
 }

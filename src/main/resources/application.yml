@@ -9,6 +9,10 @@ spring.jpa:
   show-sql: false
   properties.hibernate.jdbc.time_zone: UTC
 
+spring.servlet.multipart:
+  max-file-size: 5MB
+  max-request-size: 5MB
+
 blog:
   title: DevPub
   subtitle: Рассказы разработчиков
@@ -17,3 +21,12 @@ blog:
   copyright: Сергей Решетник
   copyrightFrom: 2021
   captchaExpiration: PT1H
+
+spring.mail:
+  host: smtp.gmail.com
+  port: 587
+  username: <login user to smtp server>
+  password: <login password to smtp server>
+  properties.mail.smtp:
+    auth: true
+    starttls.enable: true

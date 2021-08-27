@@ -2,6 +2,7 @@ package ru.skillbox.blog.dto;
 
 public class CommentDto {
     private int id;
+    private Integer parentId;
     private long timestampAsEpochSeconds;
     private String text;
     private CommentAuthorDto user;
@@ -12,6 +13,14 @@ public class CommentDto {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Integer getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
     }
 
     public long getTimestampAsEpochSeconds() {

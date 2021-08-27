@@ -3,12 +3,13 @@ package ru.skillbox.blog.controller;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.blog.api.request.MyPostListStatus;
-import ru.skillbox.blog.api.request.PostListMode;
+import ru.skillbox.blog.api.request.*;
+import ru.skillbox.blog.api.response.BaseResponse;
 import ru.skillbox.blog.api.response.PostListResponse;
 import ru.skillbox.blog.api.response.PostResponse;
 import ru.skillbox.blog.dto.PostDto;
-import ru.skillbox.blog.dto.UserProfileDto;
+import ru.skillbox.blog.dto.UserDto;
+import ru.skillbox.blog.dto.mapper.RequestMapper;
 import ru.skillbox.blog.dto.mapper.ResponseMapper;
 import ru.skillbox.blog.exceptions.EntityNotFoundException;
 import ru.skillbox.blog.service.AuthService;
@@ -44,7 +45,7 @@ public class ApiPostController {
         Integer viewerId = null;
         boolean viewerIsModerator = false;
         if (principal != null) {
-            UserProfileDto user = authService.getUser(principal.getName());
+            UserDto user = authService.getUser(principal.getName());
             viewerId = user.getId();
             viewerIsModerator = user.isModerator();
         }
@@ -97,5 +98,50 @@ public class ApiPostController {
         int userId = authService.getUser(principal.getName()).getId();
         return ResponseMapper.toPostListResponse(
                 postService.getUserPosts(userId, offset, limit, status));
+    }
+
+    @GetMapping("moderation")
+    @PreAuthorize("hasAuthority('post:moderate')")
+    public PostListResponse getModeratorPosts(
+            Principal principal,
+            @RequestParam(required = false, defaultValue = "0") int offset,
+            @RequestParam(required = false, defaultValue = "10") int limit,
+            @RequestParam(required = false, defaultValue = "new") ModeratorPostListStatus status
+    ) {
+        int moderatorId = authService.getUser(principal.getName()).getId();
+        return ResponseMapper.toPostListResponse(
+                postService.getModeratorPosts(moderatorId, offset, limit, status));
+    }
+
+    @PostMapping
+    @PreAuthorize("hasAuthority('post:write')")
+    public BaseResponse addPost(Principal principal, @RequestBody EditPostRequest request) {
+        UserDto user = authService.getUser(principal.getName());
+        postService.addPost(RequestMapper.toEditPostDto(user.getId(), request));
+        return BaseResponse.success();
+    }
+
+    @PutMapping("{id}")
+    @PreAuthorize("hasAnyAuthority('post:write', 'post:moderate')")
+    public BaseResponse editPost(Principal principal, @PathVariable int id, @RequestBody EditPostRequest request) {
+        UserDto user = authService.getUser(principal.getName());
+        postService.editPost(id, RequestMapper.toEditPostDto(user.getId(), request));
+        return BaseResponse.success();
+    }
+
+    @PostMapping("like")
+    @PreAuthorize("isAuthenticated()")
+    public BaseResponse like(Principal principal, @RequestBody LikeRequest request) {
+        UserDto user = authService.getUser(principal.getName());
+        boolean set = postService.setLike(user.getId(), request.getPostId());
+        return new BaseResponse(set);
+    }
+
+    @PostMapping("dislike")
+    @PreAuthorize("isAuthenticated()")
+    public BaseResponse dislike(Principal principal, @RequestBody LikeRequest request) {
+        UserDto user = authService.getUser(principal.getName());
+        boolean set = postService.setDislike(user.getId(), request.getPostId());
+        return new BaseResponse(set);
     }
 }

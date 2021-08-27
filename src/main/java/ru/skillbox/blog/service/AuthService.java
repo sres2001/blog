@@ -1,17 +1,22 @@
 package ru.skillbox.blog.service;
 
-import ru.skillbox.blog.dto.CaptchaDto;
-import ru.skillbox.blog.dto.RegisterDto;
-import ru.skillbox.blog.dto.UserProfileDto;
-import ru.skillbox.blog.dto.mapper.RegisterResponseDto;
+import ru.skillbox.blog.dto.*;
 
 public interface AuthService {
 
     CaptchaDto createCaptcha();
 
-    RegisterResponseDto registerUser(RegisterDto registerDto);
+    void registerUser(RegisterDto dto);
 
     UserProfileDto authenticateUser(String email, String password);
 
-    UserProfileDto getUser(String email);
+    UserDto getUser(String email);
+
+    UserProfileDto getUserProfile(String email);
+
+    void updateProfile(UpdateProfileDto dto);
+
+    String restorePassword(String email);
+
+    void changePassword(ChangePasswordDto dto);
 }

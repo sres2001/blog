@@ -64,4 +64,15 @@ public interface PostListItemRepository extends PagingAndSortingRepository<PostL
             byte active,
             ModerationStatus moderationStatus,
             Pageable pageable);
+
+    Page<PostListItem> findByActiveAndModerationStatus(
+            byte active,
+            ModerationStatus moderationStatus,
+            Pageable pageable);
+
+    Page<PostListItem> findByActiveAndModeratorIdAndModerationStatus(
+            byte active,
+            int moderatorId,
+            ModerationStatus moderationStatus,
+            Pageable pageable);
 }

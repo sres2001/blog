@@ -1,15 +1,25 @@
 package ru.skillbox.blog.controller;
 
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import ru.skillbox.blog.service.FileStorageService;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class DefaultController implements ErrorController {
+
+    private final FileStorageService fileStorageService;
+
+    public DefaultController(FileStorageService fileStorageService) {
+        this.fileStorageService = fileStorageService;
+    }
 
     @GetMapping("/")
     public String index() {
@@ -30,5 +40,13 @@ public class DefaultController implements ErrorController {
     @Override
     public String getErrorPath() {
         return null;
+    }
+
+    @GetMapping({"/upload/**", "/avatars/**"})
+    public ResponseEntity<?> getImage(HttpServletRequest request) {
+        Resource file = fileStorageService.getImage(request.getRequestURI());
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                        String.format("attachment; filename=\"%s\"", file.getFilename()))
+                .body(file);
     }
 }

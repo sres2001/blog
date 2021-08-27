@@ -1,18 +1,5 @@
 package ru.skillbox.blog.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Optional;
-import java.util.regex.Pattern;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +10,15 @@ import ru.skillbox.blog.api.request.PostListMode;
 import ru.skillbox.blog.dto.CalendarDto;
 import ru.skillbox.blog.dto.PostDto;
 import ru.skillbox.blog.dto.PostListItemDto;
+import ru.skillbox.blog.dto.StatisticsDto;
 import ru.skillbox.blog.model.Post;
 import ru.skillbox.blog.repository.PostRepository;
+
+import java.time.*;
+import java.util.Optional;
+import java.util.regex.Pattern;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class PostServiceTest {
@@ -147,4 +141,31 @@ class PostServiceTest {
         assertEquals(1, service.countPostsForModeration());
     }
 
+    @Test
+    @DisplayName("получаем статистику для автора")
+    @Transactional
+    public void testGetStatisticsByUser() {
+        StatisticsDto statistics = service.getStatisticsByUser(4);
+        assertNotNull(statistics);
+        assertEquals(9, statistics.getPostsCount());
+        assertEquals(0, statistics.getLikesCount());
+        assertEquals(0, statistics.getDislikesCount());
+        assertEquals(0, statistics.getViewsCount());
+        assertEquals(ZonedDateTime.of(2021, 6, 21, 10, 10, 1, 0, ZoneOffset.UTC).toInstant().getEpochSecond(),
+                statistics.getFirstPublicationAsEpochSeconds());
+    }
+
+    @Test
+    @DisplayName("получаем общую статистику")
+    @Transactional
+    public void testGetAllStatistics() {
+        StatisticsDto statistics = service.getAllStatistics();
+        assertNotNull(statistics);
+        assertEquals(15, statistics.getPostsCount());
+        assertEquals(3, statistics.getLikesCount());
+        assertEquals(2, statistics.getDislikesCount());
+        assertEquals(1542, statistics.getViewsCount());
+        assertEquals(ZonedDateTime.of(2020, 9, 1, 1, 30, 0, 0, ZoneOffset.UTC).toInstant().getEpochSecond(),
+                statistics.getFirstPublicationAsEpochSeconds());
+    }
 }

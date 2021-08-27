@@ -6,6 +6,7 @@ import ru.skillbox.blog.model.PostComment;
 import ru.skillbox.blog.model.PostListItem;
 import ru.skillbox.blog.model.Tag;
 import ru.skillbox.blog.model.User;
+import ru.skillbox.blog.repository.PostsStatistics;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +35,7 @@ public class DtoMapper {
         UserDto dto = new UserDto();
         dto.setId(user.getId());
         dto.setName(user.getName());
+        dto.setModerator(user.isModerator());
         return dto;
     }
 
@@ -46,7 +48,8 @@ public class DtoMapper {
     }
 
     private static String toAnnounce(String html) {
-        String text = html.replaceAll("<.*?>", "");
+        String text = html.replaceAll("<.*?>", " ")
+                .replaceAll("\\s+", " ");
         if (text.length() > 150) {
             return text.substring(0, 147) + "...";
         }
@@ -76,6 +79,7 @@ public class DtoMapper {
     private static CommentDto toCommentDto(PostComment comment) {
         CommentDto dto = new CommentDto();
         dto.setId(comment.getId());
+        dto.setParentId(comment.getParent() != null ? comment.getParent().getId() : null);
         dto.setTimestampAsEpochSeconds(comment.getTime().toInstant().getEpochSecond());
         dto.setText(comment.getText());
         dto.setUser(toCommentAuthorDto(comment.getUser()));
@@ -89,13 +93,26 @@ public class DtoMapper {
         return dto;
     }
 
-    public static UserProfileDto toUserProfileDto(User user) {
+    public static UserProfileDto toUserProfileDto(User user, long moderationCount) {
         UserProfileDto dto = new UserProfileDto();
         dto.setId(user.getId());
         dto.setName(user.getName());
         dto.setPhoto(user.getPhoto());
         dto.setEmail(user.getEmail());
         dto.setModerator(user.isModerator());
+        dto.setModerationCount(moderationCount);
+        return dto;
+    }
+
+    public static StatisticsDto toStatisticsDto(PostsStatistics statistics) {
+        StatisticsDto dto = new StatisticsDto();
+        dto.setPostsCount(statistics.getPostsCount());
+        dto.setLikesCount(statistics.getLikesCount());
+        dto.setDislikesCount(statistics.getDislikesCount());
+        dto.setViewsCount(statistics.getViewsCount());
+        if (statistics.getFirstPublication() != null) {
+            dto.setFirstPublicationAsEpochSeconds(statistics.getFirstPublication().getEpochSecond());
+        }
         return dto;
     }
 }
