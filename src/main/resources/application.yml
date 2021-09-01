@@ -1,8 +1,13 @@
+server:
+  port=${PORT:8080}
+
 spring.datasource:
-  url: jdbc:mysql://localhost:3306/blog?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=false&serverTimezone=UTC
+  url: jdbc:${JAWSDB_URL:mysql://localhost:3306/blog?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=false&serverTimezone=UTC}
   dialect: org.hibernate.dialect.MySQL8Dialect
   username: root
   password: testtest
+
+cloudinary-file-storage-service: true
 
 spring.jpa:
   hibernate.ddl-auto: validate
@@ -25,8 +30,8 @@ blog:
 spring.mail:
   host: smtp.gmail.com
   port: 587
-  username: <login user to smtp server>
-  password: <login password to smtp server>
+  username: ${SMTP_USER:login user to smtp server}
+  password: ${SMTP_PASS:login password to smtp server}
   properties.mail.smtp:
     auth: true
     starttls.enable: true

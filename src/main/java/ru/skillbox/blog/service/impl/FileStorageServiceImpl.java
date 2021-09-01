@@ -1,6 +1,7 @@
 package ru.skillbox.blog.service.impl;
 
 import org.imgscalr.Scalr;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 @Service
+@ConditionalOnProperty(name = "cloudinary-file-storage-service", havingValue = "false", matchIfMissing = true)
 public class FileStorageServiceImpl implements FileStorageService {
 
     @Override
