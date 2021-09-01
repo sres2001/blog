@@ -1,1 +1,1 @@
-web: java -jar target/blog-1.0.0.jar
+worker: java -jar target/blog-1.0.0.jar
