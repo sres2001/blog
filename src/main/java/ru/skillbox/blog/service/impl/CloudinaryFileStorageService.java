@@ -21,6 +21,9 @@ import java.util.Map;
 @ConditionalOnProperty(name = "cloudinary-file-storage-service", havingValue = "true")
 public class CloudinaryFileStorageService implements FileStorageService {
 
+    private static final String AVATARS_PREFIX = "/avatars/";
+    private static final String UPLOAD_PREFIX = "/upload/";
+
     private final Cloudinary cloudinary;
 
     public CloudinaryFileStorageService() {
@@ -29,15 +32,15 @@ public class CloudinaryFileStorageService implements FileStorageService {
 
     @Override
     public String saveUploadedImage(MultipartFile file) {
-        return saveImage("upload", file, SOURCE_SAVER);
+        return saveImage(UPLOAD_PREFIX, file, SOURCE_SAVER);
     }
 
     @Override
     public String saveAvatar(MultipartFile file) {
-        return saveImage("avatars", file, AVATAR_SAVER);
+        return saveImage(AVATARS_PREFIX, file, AVATAR_SAVER);
     }
 
-    private String saveImage(String subFolder, MultipartFile multipartFile, ImageSaver imageSaver) {
+    private String saveImage(String prefix, MultipartFile multipartFile, ImageSaver imageSaver) {
         String imageType = getSupportedExtension(multipartFile.getContentType());
         if (imageType == null) {
             throw new ApiException(HttpStatus.BAD_REQUEST,
@@ -45,7 +48,7 @@ public class CloudinaryFileStorageService implements FileStorageService {
         }
         try {
             String publicId = imageSaver.transformAndSaveImage(multipartFile, imageType);
-            return "/" + subFolder + "/" + publicId;
+            return prefix + publicId;
         } catch (IOException e) {
             throw new ApiException(HttpStatus.BAD_REQUEST, null);
         }
@@ -95,9 +98,6 @@ public class CloudinaryFileStorageService implements FileStorageService {
         }
     }
 
-    private static final String AVATARS_PREFIX = "/avatars/";
-    private static final String UPLOAD_PREFIX = "/upload/";
-    
     private String extractPublicId(String filename) {
         if (filename.startsWith(AVATARS_PREFIX)) {
             return filename.substring(AVATARS_PREFIX.length());
