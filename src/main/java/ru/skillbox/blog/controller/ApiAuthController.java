@@ -20,7 +20,9 @@ import ru.skillbox.blog.service.AuthService;
 import ru.skillbox.blog.service.GlobalSettingService;
 import ru.skillbox.blog.service.MailService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.StringJoiner;
 
 @RestController
 @RequestMapping("api/auth")
@@ -83,10 +85,24 @@ public class ApiAuthController {
     }
 
     @PostMapping("restore")
-    public BaseResponse restore(@RequestBody RestorePasswordRequest request) {
+    public BaseResponse restore(HttpServletRequest httpRequest, @RequestBody RestorePasswordRequest request) {
         String code = authService.restorePassword(request.getEmail());
-        mailService.sendPasswordRestoreEmail(request.getEmail(), code);
+        mailService.sendPasswordRestoreEmail(getApplicationUrl(httpRequest), request.getEmail(), code);
         return BaseResponse.success();
+    }
+
+    private String getApplicationUrl(HttpServletRequest request) {
+        String scheme = request.getScheme();
+        StringJoiner stringJoiner = new StringJoiner("");
+        stringJoiner.add(scheme);
+        stringJoiner.add("://");
+        stringJoiner.add(request.getServerName());
+        if (scheme.equals("http") && request.getServerPort() != 80 ||
+                scheme.equals("https") && request.getServerPort() != 443) {
+            stringJoiner.add(":");
+            stringJoiner.add(Integer.toString(request.getServerPort()));
+        }
+        return stringJoiner.toString();
     }
 
     @PostMapping("password")
