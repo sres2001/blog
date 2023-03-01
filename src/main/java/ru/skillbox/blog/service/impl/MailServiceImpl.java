@@ -1,5 +1,7 @@
 package ru.skillbox.blog.service.impl;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -8,8 +10,6 @@ import org.springframework.stereotype.Service;
 import ru.skillbox.blog.exceptions.ApiException;
 import ru.skillbox.blog.service.MailService;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 
 @Service

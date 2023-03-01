@@ -1,5 +1,8 @@
 package ru.skillbox.blog.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -18,8 +21,6 @@ import ru.skillbox.blog.dto.mapper.RequestMapper;
 import ru.skillbox.blog.dto.mapper.ResponseMapper;
 import ru.skillbox.blog.service.*;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -108,21 +109,29 @@ public class ApiGeneralController {
     @PostMapping(value = "profile/my", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("isAuthenticated()")
     public BaseResponse updateProfileFromMultipartFormData(
+            HttpServletRequest request,
             Principal principal,
-            @ModelAttribute UpdateProfileWithPhotoRequest request
+            @ModelAttribute UpdateProfileWithPhotoRequest apiRequest
     ) {
-        return updateProfile(principal, request, request.getPhoto());
+        return updateProfile(request, principal, apiRequest, apiRequest.getPhoto());
     }
 
     @PostMapping(value = "profile/my")
     @PreAuthorize("isAuthenticated()")
-    public BaseResponse updateProfileFromJson(Principal principal, @RequestBody UpdateProfileRequest request) {
-        return updateProfile(principal, request, null);
+    public BaseResponse updateProfileFromJson(
+            HttpServletRequest request,
+            Principal principal,
+            @RequestBody UpdateProfileRequest apiRequest) {
+        return updateProfile(request, principal, apiRequest, null);
     }
 
-    private BaseResponse updateProfile(Principal principal, UpdateProfileRequest request, MultipartFile photo) {
+    private BaseResponse updateProfile(
+            HttpServletRequest request,
+            Principal principal,
+            UpdateProfileRequest apiRequest,
+            MultipartFile photo) {
         int userId = authService.getUser(principal.getName()).getId();
-        authService.updateProfile(RequestMapper.toUpdateProfileDto(userId, request, photo));
+        authService.updateProfile(request, RequestMapper.toUpdateProfileDto(userId, apiRequest, photo));
         return BaseResponse.success();
     }
 

@@ -1,15 +1,13 @@
 package ru.skillbox.blog.repository;
 
+import jakarta.persistence.criteria.*;
 import org.springframework.stereotype.Repository;
 import ru.skillbox.blog.model.ModerationStatus;
 import ru.skillbox.blog.model.Post;
 import ru.skillbox.blog.model.PostTag;
 import ru.skillbox.blog.model.Tag;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TemporalType;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

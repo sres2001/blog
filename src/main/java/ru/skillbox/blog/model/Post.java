@@ -1,6 +1,7 @@
 package ru.skillbox.blog.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 import java.util.Date;
 import java.util.Set;
 
@@ -8,7 +9,7 @@ import java.util.Set;
 @Table(name = "posts")
 public class Post {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hibernate_sequence")
     private int id;
 
     @Column(name = "is_active", nullable = false)

@@ -1,5 +1,6 @@
 package ru.skillbox.blog.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import ru.skillbox.blog.dto.*;
 
 public interface AuthService {
@@ -8,13 +9,16 @@ public interface AuthService {
 
     void registerUser(RegisterDto dto);
 
-    UserProfileDto authenticateUser(String email, String password);
+    UserProfileDto authenticateUser(
+            HttpServletRequest request,
+            String email,
+            String password);
 
     UserDto getUser(String email);
 
     UserProfileDto getUserProfile(String email);
 
-    void updateProfile(UpdateProfileDto dto);
+    void updateProfile(HttpServletRequest request, UpdateProfileDto dto);
 
     String restorePassword(String email);
 

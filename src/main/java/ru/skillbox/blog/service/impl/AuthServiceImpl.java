@@ -1,5 +1,6 @@
 package ru.skillbox.blog.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,6 +10,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.blog.dto.*;
@@ -120,10 +122,16 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserProfileDto authenticateUser(String email, String password) {
+    public UserProfileDto authenticateUser(
+            HttpServletRequest request,
+            String email,
+            String password) {
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, password));
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        SecurityContext context = SecurityContextHolder.getContext();
+        context.setAuthentication(authenticate);
+        request.getSession(true).setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
         return getUserProfile(email);
     }
 
@@ -146,7 +154,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public void updateProfile(UpdateProfileDto dto) {
+    public void updateProfile(HttpServletRequest request, UpdateProfileDto dto) {
         User user = userRepository.getOne(dto.getUserId());
         validateProfile(dto, user);
         user.setName(dto.getName());
@@ -180,6 +188,8 @@ public class AuthServiceImpl implements AuthService {
                             user.getEmail(),
                             "unknown password",
                             currentAuthentication.getAuthorities()));
+            request.getSession(true).setAttribute(
+                    HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
         }
     }
 

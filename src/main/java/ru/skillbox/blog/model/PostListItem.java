@@ -3,7 +3,7 @@ package ru.skillbox.blog.model;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -29,7 +29,6 @@ import java.util.Date;
         "csub on psub.id = csub.post_id")
 public class PostListItem {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Column(name = "is_active", nullable = false)

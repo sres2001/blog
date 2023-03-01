@@ -1,8 +1,11 @@
 package ru.skillbox.blog.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.blog.api.request.ChangePasswordRequest;
 import ru.skillbox.blog.api.request.LoginRequest;
@@ -20,7 +23,6 @@ import ru.skillbox.blog.service.AuthService;
 import ru.skillbox.blog.service.GlobalSettingService;
 import ru.skillbox.blog.service.MailService;
 
-import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.StringJoiner;
 
@@ -67,9 +69,10 @@ public class ApiAuthController {
     }
 
     @PostMapping("login")
-    public LoginResponse login(@RequestBody LoginRequest request) {
+    public LoginResponse login(HttpServletRequest request, @RequestBody LoginRequest loginRequest) {
         try {
-            UserProfileDto user = authService.authenticateUser(request.getEmail(), request.getPassword());
+            UserProfileDto user = authService.authenticateUser(request, 
+                    loginRequest.getEmail(), loginRequest.getPassword());
             return ResponseMapper.toLoginResponse(user);
         } catch (AuthenticationException e) {
             return new LoginResponse(false);
@@ -77,9 +80,12 @@ public class ApiAuthController {
     }
 
     @GetMapping("logout")
-    public BaseResponse logout(Principal principal) {
+    public BaseResponse logout(HttpServletRequest request, Principal principal) {
         if (principal != null) {
-            SecurityContextHolder.getContext().setAuthentication(null);
+            SecurityContext context = SecurityContextHolder.getContext();
+            context.setAuthentication(null);
+            request.getSession(true).setAttribute(
+                    HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
         }
         return BaseResponse.success();
     }

@@ -1,5 +1,7 @@
 package ru.skillbox.blog.controller;
 
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -8,9 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import ru.skillbox.blog.service.FileStorageService;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class DefaultController implements ErrorController {
@@ -35,11 +34,6 @@ public class DefaultController implements ErrorController {
             }
         }
         return "error";
-    }
-
-    @Override
-    public String getErrorPath() {
-        return null;
     }
 
     @GetMapping({"/upload/**", "/avatars/**"})

@@ -1,12 +1,12 @@
 package ru.skillbox.blog.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tag2post")
 public class PostTag {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hibernate_sequence")
     private int id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
